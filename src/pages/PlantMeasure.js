@@ -85,11 +85,11 @@ const PlantMeasures = () => {
                 fontSize: "0.9rem",
               },
               "& .Mui-selected": {
-                color: " #2E7D32 ",
+                color: " #5CB338 !important",
                 fontWeight: 600,
               },
               "& .MuiTabs-indicator": {
-                backgroundColor: "black",
+                backgroundColor: "#33372C",
               },
             }}
           >
