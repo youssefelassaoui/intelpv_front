@@ -1,11 +1,11 @@
 "use client";
 import { Grid, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import CustomDateRangePicker from "../components/CustomDateRangePicker";
-import WeatherCards from "../components/WeatherCards";
-import ChartSection from "../components/WeatherChartSection";
-import Footer from "../components/Footer";
+import Navbar from "../components/GloabalComponents/Navbar";
+import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker";
+import WeatherCards from "../components/WeatherStation/WeatherCards";
+import ChartSection from "../components/WeatherStation/WeatherChartSection";
+import Footer from "../components/GloabalComponents/Footer";
 
 const WeatherStation = () => {
   const [startDate, setStartDate] = useState(new Date("2024-10-09"));
@@ -149,7 +149,7 @@ const WeatherStation = () => {
       <Navbar />
       <Grid
         container
-        sx={{ backgroundColor: "#F5F7F8", minHeight: "100vh", padding: 3 }}
+        sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh", padding: 3 }}
       >
         {/* Weather Cards */}
         <Grid

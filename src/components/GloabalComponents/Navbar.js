@@ -108,7 +108,7 @@ export default function ToolbarComponent() {
       icon: <DashboardIcon sx={{ fontSize: "1.2rem" }} />,
     },
     {
-      path: "/plant-measures",
+      path: "/plants_list",
       label: "PLANT-MEASURES",
       icon: <EqualizerIcon sx={{ fontSize: "1.2rem" }} />,
     },
@@ -136,7 +136,11 @@ export default function ToolbarComponent() {
       <Toolbar>
         {/* Logo */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <img src="intelligentpv-logo.png" alt="Logo" style={{ height: "35px" }} />
+          <img
+            src="intelligentpv-logo.png"
+            alt="Logo"
+            style={{ height: "35px" }}
+          />
         </Box>
 
         {/* Mobile Menu Button */}

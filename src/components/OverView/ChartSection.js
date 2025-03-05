@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
 import ReactApexChart from "react-apexcharts";
-import CustomDateRangePicker from "./CustomDateRangePicker";
+import CustomDateRangePicker from "../GloabalComponents/CustomDateRangePicker";
 import ProductionComparison from "./ProductionComparison";
 
 // Updated vibrant colors for better distinction

@@ -64,6 +64,7 @@ const PlantCard = ({ plant }) => {
             fontWeight: 600,
             fontSize: "0.9rem",
             mb: 1.5,
+            color: "#16423C",
           }}
         >
           {plant.name}

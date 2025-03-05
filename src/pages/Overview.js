@@ -1,12 +1,12 @@
 import React from "react";
 import { Box, Container, Typography, Card, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Navbar from "../components/Navbar";
-import PlantCard from "../components/PlantCard";
-import ChartSection from "../components/ChartSection";
-import MapSection from "../components/MapSection";
-import InverterSection from "../components/InverterSection";
-import Footer from "../components/Footer";
+import Navbar from "../components/GloabalComponents/Navbar";
+import PlantCard from "../components/OverView/PlantCard";
+import ChartSection from "../components/OverView/ChartSection";
+import MapSection from "../components/OverView/MapSection";
+import InverterSection from "../components/OverView/InverterSection";
+import Footer from "../components/GloabalComponents/Footer";
 import {
   BoltOutlined,
   PowerOutlined,
@@ -180,7 +180,7 @@ const Overview = () => {
                   sx={{
                     fontFamily: "'Poppins', sans-serif",
                     fontWeight: 600,
-                    color: "#2E7D32",
+                    color: "#33372C",
                   }}
                 >
                   {totalStrings}

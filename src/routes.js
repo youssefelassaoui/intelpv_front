@@ -1,5 +1,7 @@
 import Overview from "./pages/Overview";
 import WeatherStation from "./pages/WeatherStation";
+import PlantMeasures from "./pages/PlantMeasure";
+import PlantsList from "./pages/PlantsList"; // Placeholder for PlantsList
 
 const routes = [
   {
@@ -14,7 +16,12 @@ const routes = [
   },
   {
     path: "/plant-measures",
-    element: () => <div>Plant Measures Page</div>, // Placeholder
+    element: PlantMeasures, // Placeholder
+    exact: true,
+  },
+  {
+    path: "/plants_list",
+    element: PlantsList, // Placeholder
     exact: true,
   },
   {
