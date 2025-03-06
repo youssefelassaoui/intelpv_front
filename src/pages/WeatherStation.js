@@ -149,7 +149,13 @@ const WeatherStation = () => {
       <Navbar />
       <Grid
         container
-        sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh", padding: 3 }}
+        sx={{
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+          padding: 3,
+          overflow: "hidden",
+          maxWidth: "100%",
+        }}
       >
         {/* Weather Cards */}
         <Grid

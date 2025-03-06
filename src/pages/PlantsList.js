@@ -298,64 +298,79 @@ const PlantsList = () => {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-        overflow: "hidden", // Remove scrollbars
+        overflow: "hidden",
       }}
     >
       <Navbar />
+      <Grid
+        container
+        sx={{
+          backgroundColor: "#f5f5f5",
+          flex: 1,
+          padding: { xs: 2, sm: 3 }, // Responsive padding
+          overflow: "hidden",
+          maxWidth: "100%",
+          justifyContent: "center", // Center the grid content
+        }}
+      >
+        <Grid
+          item
+          xs={12}
+          sx={{
+            maxWidth: "1600px", // Maximum width for content
+            width: "100%",
+          }}
+        >
+          <Box sx={{ textAlign: "center", mb: 4, px: { xs: 1, sm: 2 } }}>
+            <Typography
+              variant="h4"
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 600,
+                color: "#333",
+                mb: 1,
+                fontSize: { xs: "1.5rem", sm: "2rem" }, // Responsive font size
+              }}
+            >
+              Solar Plants
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                color: "#666",
+                maxWidth: "800px",
+                mx: "auto",
+                fontSize: { xs: "0.875rem", sm: "1rem" }, // Responsive font size
+              }}
+            >
+              Select a plant to view detailed measurements, performance
+              analytics, and operational insights
+            </Typography>
+          </Box>
 
-      <Container maxWidth={false} sx={{ flexGrow: 1, py: 3 }}>
-        <Box sx={{ textAlign: "center", mb: 4, px: 2 }}>
-          <Typography
-            variant="h4"
+          <Grid
+            container
+            spacing={{ xs: 2, sm: 3 }} // Responsive spacing
             sx={{
-              fontFamily: "'Poppins', sans-serif",
-              fontWeight: 600,
-              color: "#333",
-              mb: 1,
-            }}
-          >
-            Solar Plants
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              fontFamily: "'Poppins', sans-serif",
-              color: "#666",
-              maxWidth: "800px",
+              display: "flex",
+              justifyContent: "center", // Center the cards
+              width: "100%",
               mx: "auto",
             }}
           >
-            Select a plant to view detailed measurements, performance analytics,
-            and operational insights
-          </Typography>
-        </Box>
-
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            px: 2,
-            mb: 4,
-            display: "flex",
-            justifyContent: "flex-start",
-            width: "100%",
-            maxWidth: "1600px",
-            mx: "auto",
-          }}
-        >
-          {plants.map((plant) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={plant.id}>
-              <PlantCard
-                plant={plant}
-                loading={loading}
-                onSelect={handlePlantSelect}
-              />
-            </Grid>
-          ))}
+            {plants.map((plant) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={plant.id}>
+                <PlantCard
+                  plant={plant}
+                  loading={loading}
+                  onSelect={handlePlantSelect}
+                />
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
-      </Container>
-
+      </Grid>
       <Footer />
     </Box>
   );

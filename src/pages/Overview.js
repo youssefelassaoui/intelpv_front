@@ -96,171 +96,180 @@ const Overview = () => {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-        overflow: "hidden", // Prevent horizontal scrollbar
+        overflow: "hidden",
       }}
     >
       <Navbar />
-      <Container
-        maxWidth={false}
+      <Grid
+        container
         sx={{
-          py: 3,
-          px: 2,
-          flexGrow: 1,
+          backgroundColor: "#f5f5f5",
+          flex: 1,
+          padding: { xs: 2, sm: 3 }, // Responsive padding
+          overflow: "hidden",
+          maxWidth: "100%",
+          justifyContent: "center", // Center the grid content
         }}
       >
-        {/* Header Section */}
-        <Grid container spacing={2} sx={{ mb: 2 }}>
-          <Grid item xs={12} sm={4}>
-            <StatsCard>
-              <Box
-                sx={{
-                  backgroundColor: "rgba(46, 125, 50, 0.1)",
-                  borderRadius: "50%",
-                  p: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <BoltOutlined sx={{ fontSize: 24, color: "#2E7D32" }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="body2"
+        <Grid
+          item
+          xs={12}
+          sx={{
+            maxWidth: "1600px", // Maximum width for content
+            width: "100%",
+          }}
+        >
+          {/* Header Section */}
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={12} sm={4}>
+              <StatsCard>
+                <Box
                   sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    color: "text.secondary",
-                    fontSize: "0.75rem",
+                    backgroundColor: "rgba(46, 125, 50, 0.1)",
+                    borderRadius: "50%",
+                    p: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  Total Capacity
-                </Typography>
-                <Typography
-                  variant="h6"
+                  <BoltOutlined sx={{ fontSize: 24, color: "#2E7D32" }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      color: "text.secondary",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Total Capacity
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      fontWeight: 600,
+                      color: "#2E7D32",
+                    }}
+                  >
+                    {totalCapacity.toFixed(1)} MW
+                  </Typography>
+                </Box>
+              </StatsCard>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <StatsCard>
+                <Box
                   sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 600,
-                    color: "#2E7D32",
+                    backgroundColor: "rgba(46, 125, 50, 0.1)",
+                    borderRadius: "50%",
+                    p: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  {totalCapacity.toFixed(1)} MW
-                </Typography>
-              </Box>
-            </StatsCard>
+                  <PowerOutlined sx={{ fontSize: 24, color: "#2E7D32" }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      color: "text.secondary",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Total Strings
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      fontWeight: 600,
+                      color: "#33372C",
+                    }}
+                  >
+                    {totalStrings}
+                  </Typography>
+                </Box>
+              </StatsCard>
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
+              <StatsCard>
+                <Box
+                  sx={{
+                    backgroundColor: "rgba(255, 152, 0, 0.1)",
+                    borderRadius: "50%",
+                    p: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <WarningAmberOutlined
+                    sx={{ fontSize: 24, color: "#FF9800" }}
+                  />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      color: "text.secondary",
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    In Maintenance
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      fontWeight: 600,
+                      color: "#FF9800",
+                    }}
+                  >
+                    {maintenanceCount} Plants
+                  </Typography>
+                </Box>
+              </StatsCard>
+            </Grid>
           </Grid>
 
-          <Grid item xs={12} sm={4}>
-            <StatsCard>
-              <Box
-                sx={{
-                  backgroundColor: "rgba(46, 125, 50, 0.1)",
-                  borderRadius: "50%",
-                  p: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <PowerOutlined sx={{ fontSize: 24, color: "#2E7D32" }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    color: "text.secondary",
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  Total Strings
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 600,
-                    color: "#33372C",
-                  }}
-                >
-                  {totalStrings}
-                </Typography>
-              </Box>
-            </StatsCard>
-          </Grid>
+          {/* Plants Cards Section */}
+          <Box sx={{ mb: 1.5 }}>
+            <Grid container spacing={1.5}>
+              {plants.map((plant) => (
+                <Grid item xs={12} sm={6} md={2.4} key={plant.id}>
+                  <PlantCard plant={plant} />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
 
-          <Grid item xs={12} sm={4}>
-            <StatsCard>
-              <Box
-                sx={{
-                  backgroundColor: "rgba(255, 152, 0, 0.1)",
-                  borderRadius: "50%",
-                  p: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <WarningAmberOutlined sx={{ fontSize: 24, color: "#FF9800" }} />
-              </Box>
-              <Box>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    color: "text.secondary",
-                    fontSize: "0.75rem",
-                  }}
-                >
-                  In Maintenance
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 600,
-                    color: "#FF9800",
-                  }}
-                >
-                  {maintenanceCount} Plants
-                </Typography>
-              </Box>
-            </StatsCard>
-          </Grid>
-        </Grid>
+          {/* Charts Section */}
+          <Box sx={{ mb: 2 }}>
+            <ChartSection />
+          </Box>
 
-        {/* Plants Cards Section */}
-        <Box sx={{ mb: 1.5 }}>
-          {" "}
-          {/* Reduced margin bottom to 8px */}
-          <Grid container spacing={1.5}>
-            {plants.map((plant) => (
-              <Grid item xs={12} sm={6} md={2.4} key={plant.id}>
-                <PlantCard plant={plant} />
+          {/* Map and Inverter Section */}
+          <Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={8}>
+                <MapSection />
               </Grid>
-            ))}
-          </Grid>
-        </Box>
-
-        {/* Charts Section */}
-        <Box sx={{ mb: 2 }}>
-          <ChartSection />
-        </Box>
-
-        {/* Map and Inverter Section */}
-        <Box>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={8}>
-              <MapSection />
+              <Grid item xs={12} md={4}>
+                <InverterSection />
+              </Grid>
             </Grid>
-            <Grid item xs={12} md={4}>
-              <InverterSection />
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
-
-      {/* Footer */}
+          </Box>
+        </Grid>
+      </Grid>
       <Footer />
     </Box>
   );

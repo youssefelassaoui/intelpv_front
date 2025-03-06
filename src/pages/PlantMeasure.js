@@ -25,12 +25,15 @@ const PlantMeasures = () => {
   };
 
   return (
+    // Update the main Box container at the top of your component
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
         backgroundColor: "#f5f5f5",
+        overflow: "hidden", // Add this line to prevent horizontal scrollbar
+        width: "100%", // Ensure the box doesn't exceed viewport width
       }}
     >
       <Navbar />
