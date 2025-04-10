@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Card,
   CardContent,
@@ -10,7 +9,8 @@ import {
   Box,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { LocationOn, BoltOutlined, PowerOutlined } from "@mui/icons-material";
+import { LocationOn, BoltOutlined } from "@mui/icons-material";
+import { Columns4 } from "lucide-react"; // Import Columns4 from lucide-react
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -95,7 +95,8 @@ const PlantCard = ({ plant }) => {
             </Typography>
           </InfoRow>
           <InfoRow>
-            <PowerOutlined sx={{ fontSize: 16 }} />
+            {/* Replace PowerOutlined with Columns4 from lucide-react */}
+            <Columns4 size={16} />
             <Typography
               variant="body2"
               sx={{

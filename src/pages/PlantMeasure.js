@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -14,6 +14,7 @@ import Navbar from "../components/GloabalComponents/Navbar";
 import MetricsHeader from "../components/PlantMeasure/MetricsHeader";
 import Footer from "../components/GloabalComponents/Footer";
 import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker";
+import ChartSection from "../components/PlantMeasure/ChartSection";
 
 const PlantMeasures = () => {
   const [startDate, setStartDate] = useState(new Date("2023-08-25"));
@@ -25,15 +26,14 @@ const PlantMeasures = () => {
   };
 
   return (
-    // Update the main Box container at the top of your component
     <Box
       sx={{
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
         backgroundColor: "#f5f5f5",
-        overflow: "hidden", // Add this line to prevent horizontal scrollbar
-        width: "100%", // Ensure the box doesn't exceed viewport width
+        overflow: "hidden",
+        width: "100%",
       }}
     >
       <Navbar />
@@ -103,15 +103,16 @@ const PlantMeasures = () => {
           </Tabs>
         </Box>
 
-        {/* Placeholder Content Based on Active Tab */}
+        {/* Content Based on Active Tab */}
         <Box sx={{ mb: 4 }}>
           {activeTab === 0 && (
             <Grid container spacing={2}>
-              <Grid item xs={12} md={8}>
+              <Grid item xs={12}>
                 <Card
                   sx={{
                     boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
                     borderRadius: 2,
+                    marginBottom: 2,
                   }}
                 >
                   <CardContent>
@@ -123,53 +124,9 @@ const PlantMeasures = () => {
                         fontSize: "1rem",
                       }}
                     >
-                      Daily Production
+                      Plant Metrics
                     </Typography>
-                    <Box
-                      sx={{
-                        height: 300,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Typography variant="body1" color="text.secondary">
-                        Chart will be displayed here
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <Card
-                  sx={{
-                    boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
-                    borderRadius: 2,
-                  }}
-                >
-                  <CardContent>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mb: 2,
-                        fontFamily: "'Poppins', sans-serif",
-                        fontSize: "1rem",
-                      }}
-                    >
-                      Performance Metrics
-                    </Typography>
-                    <Box
-                      sx={{
-                        height: 300,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Typography variant="body1" color="text.secondary">
-                        Metrics will be displayed here
-                      </Typography>
-                    </Box>
+                    <ChartSection />
                   </CardContent>
                 </Card>
               </Grid>
@@ -191,18 +148,84 @@ const PlantMeasures = () => {
                     >
                       Plant Details
                     </Typography>
-                    <Box
-                      sx={{
-                        height: 200,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Typography variant="body1" color="text.secondary">
-                        Plant details will be displayed here
-                      </Typography>
-                    </Box>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} md={3}>
+                        <Box
+                          sx={{
+                            p: 2,
+                            border: "1px solid #eee",
+                            borderRadius: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
+                          >
+                            Total DC Power
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            2,750 kW
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <Box
+                          sx={{
+                            p: 2,
+                            border: "1px solid #eee",
+                            borderRadius: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
+                          >
+                            Average DC Voltage
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            325.4 V
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <Box
+                          sx={{
+                            p: 2,
+                            border: "1px solid #eee",
+                            borderRadius: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
+                          >
+                            Peak DC Current
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            8.5 A
+                          </Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <Box
+                          sx={{
+                            p: 2,
+                            border: "1px solid #eee",
+                            borderRadius: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle2"
+                            color="text.secondary"
+                          >
+                            Daily Energy
+                          </Typography>
+                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                            18.4 kWh
+                          </Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
                   </CardContent>
                 </Card>
               </Grid>
@@ -210,47 +233,53 @@ const PlantMeasures = () => {
           )}
 
           {activeTab === 1 && (
-            <Box
-              sx={{
-                height: 500,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography variant="h6" color="text.secondary">
-                Production data will be displayed here
-              </Typography>
+            <Box sx={{ height: "auto" }}>
+              <Card
+                sx={{
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
+                  borderRadius: 2,
+                  padding: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Production Data
+                </Typography>
+                <ChartSection />
+              </Card>
             </Box>
           )}
 
           {activeTab === 2 && (
-            <Box
-              sx={{
-                height: 500,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography variant="h6" color="text.secondary">
-                Performance data will be displayed here
-              </Typography>
+            <Box sx={{ height: "auto" }}>
+              <Card
+                sx={{
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
+                  borderRadius: 2,
+                  padding: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Performance Data
+                </Typography>
+                <ChartSection />
+              </Card>
             </Box>
           )}
 
           {activeTab === 3 && (
-            <Box
-              sx={{
-                height: 500,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography variant="h6" color="text.secondary">
-                Comparison data will be displayed here
-              </Typography>
+            <Box sx={{ height: "auto" }}>
+              <Card
+                sx={{
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
+                  borderRadius: 2,
+                  padding: 2,
+                }}
+              >
+                <Typography variant="h6" sx={{ mb: 2 }}>
+                  Comparison Data
+                </Typography>
+                <ChartSection />
+              </Card>
             </Box>
           )}
         </Box>

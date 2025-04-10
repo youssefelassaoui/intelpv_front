@@ -14,35 +14,35 @@ import "leaflet/dist/leaflet.css";
 const plantLocations = [
   {
     id: 1,
-    name: "Solar Farm Alpha",
-    coordinates: [33.4484, -112.074], // Phoenix, AZ area
+    name: "Green & Smart Building Park",
+    coordinates: [32.2170, -7.9310], // Phoenix, AZ area
     capacity: "12.5 MW",
     color: "#2E7D32",
   },
   {
     id: 2,
-    name: "Sunlight Beta Station",
-    coordinates: [37.7749, -122.4194], // San Francisco, CA area
+    name: "Green Energy Park",
+    coordinates: [32.2207, -7.9287], // San Francisco, CA area
     capacity: "8.2 MW",
     color: "#66BB6A",
   },
   {
     id: 3,
-    name: "Green Energy Park",
-    coordinates: [30.2672, -97.7431], // Austin, TX area
+    name: "Hospital Universario Rien Sofía",
+    coordinates: [37.872, -4.7894], // Austin, TX area
     capacity: "15.0 MW",
     color: "#81C784",
   },
   {
     id: 4,
-    name: "Solar Valley Plant",
-    coordinates: [36.1699, -115.1398], // Las Vegas, NV area
+    name: "Mohammed VI Museum of Modern and Contemporary Art",
+    coordinates: [34.0136, -6.8373], // Las Vegas, NV area
     capacity: "10.8 MW",
     color: "#A5D6A7",
   },
   {
     id: 5,
-    name: "Desert Sun Complex",
+    name: "Fkih ben saleh",
     coordinates: [33.4538, -112.074], // Phoenix, AZ area (slightly offset)
     capacity: "18.3 MW",
     color: "#C8E6C9",

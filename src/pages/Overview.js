@@ -30,9 +30,8 @@ const StatsCard = styled(Card)(({ theme }) => ({
 const plants = [
   {
     id: 1,
-    name: "Green & Smart Building Park",
-    image:
-      "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&auto=format",
+    name: "Green & Smart Building Park ()",
+    image: "/gsbp.jpg",
     location: "Ben Guerir 43150, MO",
     capacity: "6 kW",
     strings: 3,
@@ -40,19 +39,17 @@ const plants = [
   },
   {
     id: 2,
-    name: "Green Energy Park",
-    image:
-      "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=800&auto=format",
+    name: "Green Energy Park (Trina)",
+    image: "/trina.jpg",
     location: "Route Régionale Kelaa Km 3, R206, Ben Guerir, MO",
-    capacity: "--",
-    strings: "--",
+    capacity: "-- MW",
+    strings: "6",
     status: "Active",
   },
   {
     id: 3,
-    name: "Hospital Universario Rien Sofia",
-    image:
-      "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=800&auto=format",
+    name: "Hospital Universario Rien Sofía",
+    image: "/hospital.jpeg",
     location: "Av. Menéndez Pidal, s/n, Poniente Sur, 14004 Córdoba, ES",
     capacity: "1.72 MW",
     strings: 274,
@@ -61,21 +58,19 @@ const plants = [
   {
     id: 4,
     name: "Mohammed VI Museum of Modern and Contemporary Art",
-    image:
-      "https://images.unsplash.com/photo-1542336391-ae2936d8af02?w=800&auto=format",
+    image: "/musee.jpg",
     location: " 2 Av. Moulay Hassan, Rabat, MO",
-    capacity: "10.8 MW",
-    strings: 420,
+    capacity: "136 KW",
+    strings: 20,
     status: "Active",
   },
   {
     id: 5,
     name: "Fkih ben saleh",
-    image:
-      "https://images.unsplash.com/photo-1559302504-64aae6ca6b6f?w=800&auto=format",
-    location: "--",
-    capacity: "--",
-    strings: "--",
+    image: "/fkih.png",
+    location: "32.5778782, -6.6216788",
+    capacity: "400 KW",
+    strings: "12",
     status: "Active",
   },
 ];
@@ -85,7 +80,7 @@ const Overview = () => {
   const totalCapacity = plants.reduce((sum, plant) => {
     return sum + parseFloat(plant.capacity);
   }, 0);
-  const totalStrings = plants.reduce((sum, plant) => sum + plant.strings, 0);
+  //   const totalStrings = plants.reduce((sum, plant) => sum + plant.strings, 0);
   const maintenanceCount = plants.filter(
     (plant) => plant.status === "Maintenance"
   ).length;
@@ -193,7 +188,7 @@ const Overview = () => {
                       color: "#33372C",
                     }}
                   >
-                    {totalStrings}
+                    315{" "}
                   </Typography>
                 </Box>
               </StatsCard>
