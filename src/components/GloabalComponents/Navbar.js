@@ -108,16 +108,16 @@ export default function ToolbarComponent() {
       icon: <DashboardIcon sx={{ fontSize: "1.2rem" }} />,
     },
     {
-      path: "/plants_list",
+      path: "/plant-measures",
       label: "PLANT-MEASURES",
       icon: <EqualizerIcon sx={{ fontSize: "1.2rem" }} />,
     },
 
-    {
-      path: "/weather-station",
-      label: "WEATHER STATION",
-      icon: <CloudIcon sx={{ fontSize: "1.2rem" }} />,
-    },
+    // {
+    //   path: "/weather-station",
+    //   label: "WEATHER STATION",
+    //   icon: <CloudIcon sx={{ fontSize: "1.2rem" }} />,
+    // },
     {
       path: "/alarms",
       label: "ALARMS",

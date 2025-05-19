@@ -1,5 +1,4 @@
-import React from "react";
-import { Grid, Card, Typography, Box, Tooltip, Divider } from "@mui/material";
+import { Grid, Card, Typography, Box, Tooltip, Divider } from "@mui/material"
 import {
   Info,
   BarChart,
@@ -9,10 +8,11 @@ import {
   ArrowDownward,
   ArrowDropUp,
   ArrowDropDown,
-} from "@mui/icons-material";
+  BatteryFull,
+} from "@mui/icons-material"
 
 const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
-  const isPositiveChange = change > 0;
+  const isPositiveChange = change > 0
 
   return (
     <Card
@@ -112,22 +112,16 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
             sx={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: isPositiveChange
-                ? "rgba(76, 175, 80, 0.1)"
-                : "rgba(244, 67, 54, 0.1)",
+              backgroundColor: isPositiveChange ? "rgba(76, 175, 80, 0.1)" : "rgba(244, 67, 54, 0.1)",
               borderRadius: "4px",
               px: 0.5,
               py: 0.2,
             }}
           >
             {isPositiveChange ? (
-              <ArrowDropUp
-                sx={{ fontSize: 20, color: "#4caf50", margin: "-4px" }}
-              />
+              <ArrowDropUp sx={{ fontSize: 20, color: "#4caf50", margin: "-4px" }} />
             ) : (
-              <ArrowDropDown
-                sx={{ fontSize: 20, color: "#f44336", margin: "-4px" }}
-              />
+              <ArrowDropDown sx={{ fontSize: 20, color: "#f44336", margin: "-4px" }} />
             )}
             <Typography
               variant="caption"
@@ -152,7 +146,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
               lineHeight: 1.2,
             }}
           >
-            {isPositiveChange ? "more" : "less"} than 30/08/23
+            {isPositiveChange ? "more" : "less"} than 17/05/25
           </Typography>
         </Box>
       </Box>
@@ -175,48 +169,56 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
         )}
       </Box>
     </Card>
-  );
-};
+  )
+}
 
 const MetricsHeader = () => {
   const metrics = [
     {
-      title: "Energy Produced",
-      value: 25418.85,
-      unit: "kWh",
-      date: "31/08/23",
+      title: "Daily Energy",
+      value: 142.85, // Daily production for 25kW in Benguerir (May)
+      unit: "kWh/day",
+      date: "18/05/25",
       change: 6.44,
       icon: BoltOutlined,
     },
     {
       title: "Specific Yield",
-      value: 2.8,
+      value: 5.71, // Daily yield for Benguerir in May
       unit: "kWh/kW",
-      date: "31/08/23",
+      date: "18/05/25",
       change: 6.44,
       icon: Speed,
     },
     {
       title: "PR",
-      value: 0.72,
+      value: 0.82, // Realistic performance ratio
       unit: "",
-      date: "31/08/23",
+      date: "18/05/25",
       change: -0.29,
       icon: BarChart,
     },
-  ];
+    {
+      title: "Battery State",
+      value: 85,
+      unit: "%",
+      date: "18/05/25",
+      change: 5.2,
+      icon: BatteryFull,
+    },
+  ]
 
   return (
     <Box sx={{ py: 1.5, px: 3, backgroundColor: "#f5f5f5" }}>
       <Grid container spacing={2}>
         {metrics.map((metric, index) => (
-          <Grid item xs={12} md={4} key={index}>
+          <Grid item xs={12} md={3} key={index}>
             <MetricCard {...metric} />
           </Grid>
         ))}
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
-export default MetricsHeader;
+export default MetricsHeader

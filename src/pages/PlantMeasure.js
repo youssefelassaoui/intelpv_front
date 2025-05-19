@@ -1,29 +1,23 @@
-"use client";
-import { useState } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  Tabs,
-  Tab,
-} from "@mui/material";
-import Navbar from "../components/GloabalComponents/Navbar";
-import MetricsHeader from "../components/PlantMeasure/MetricsHeader";
-import Footer from "../components/GloabalComponents/Footer";
-import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker";
-import ChartSection from "../components/PlantMeasure/ChartSection";
+"use client"
+import { useState } from "react"
+import { Box, Container, Typography, Grid, Card, CardContent, Tabs, Tab } from "@mui/material"
+import Navbar from "../components/GloabalComponents/Navbar"
+import MetricsHeader from "../components/PlantMeasure/MetricsHeader"
+import Footer from "../components/GloabalComponents/Footer"
+import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker"
+import ChartSection from "../components/PlantMeasure/ChartSection"
+import PowerCharts from "../components/OverView/PowerCharts"
+import DCMetricsChart from "../components/PlantMeasure/DCMetricsChart"
+import WeatherMetricsChart from "../components/PlantMeasure/WeatherMetricsChart"
 
 const PlantMeasures = () => {
-  const [startDate, setStartDate] = useState(new Date("2023-08-25"));
-  const [endDate, setEndDate] = useState(new Date("2023-08-31"));
-  const [activeTab, setActiveTab] = useState(0);
+  const [startDate, setStartDate] = useState(new Date("2023-08-25"))
+  const [endDate, setEndDate] = useState(new Date("2023-08-31"))
+  const [activeTab, setActiveTab] = useState(0)
 
   const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
+    setActiveTab(newValue)
+  }
 
   return (
     <Box
@@ -68,8 +62,8 @@ const PlantMeasures = () => {
               startDate={startDate}
               endDate={endDate}
               onRangeChange={(start, end) => {
-                setStartDate(start);
-                setEndDate(end);
+                setStartDate(start)
+                setEndDate(end)
               }}
             />
           </Grid>
@@ -96,10 +90,10 @@ const PlantMeasures = () => {
               },
             }}
           >
-            <Tab label="Overview" />
-            <Tab label="Production" />
+            <Tab label="Energy Overview" />
+            <Tab label="Weather Metrics" />
             <Tab label="Performance" />
-            <Tab label="Comparison" />
+            {/* <Tab label="Comparison" /> */}
           </Tabs>
         </Box>
 
@@ -124,9 +118,9 @@ const PlantMeasures = () => {
                         fontSize: "1rem",
                       }}
                     >
-                      Plant Metrics
+                      Power Generation & Consumption
                     </Typography>
-                    <ChartSection />
+                    <PowerCharts />
                   </CardContent>
                 </Card>
               </Grid>
@@ -135,6 +129,7 @@ const PlantMeasures = () => {
                   sx={{
                     boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
                     borderRadius: 2,
+                    marginBottom: 2,
                   }}
                 >
                   <CardContent>
@@ -146,86 +141,9 @@ const PlantMeasures = () => {
                         fontSize: "1rem",
                       }}
                     >
-                      Plant Details
+                      DC Metrics
                     </Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={12} md={3}>
-                        <Box
-                          sx={{
-                            p: 2,
-                            border: "1px solid #eee",
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                          >
-                            Total DC Power
-                          </Typography>
-                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            2,750 kW
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <Box
-                          sx={{
-                            p: 2,
-                            border: "1px solid #eee",
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                          >
-                            Average DC Voltage
-                          </Typography>
-                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            325.4 V
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <Box
-                          sx={{
-                            p: 2,
-                            border: "1px solid #eee",
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                          >
-                            Peak DC Current
-                          </Typography>
-                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            8.5 A
-                          </Typography>
-                        </Box>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <Box
-                          sx={{
-                            p: 2,
-                            border: "1px solid #eee",
-                            borderRadius: 1,
-                          }}
-                        >
-                          <Typography
-                            variant="subtitle2"
-                            color="text.secondary"
-                          >
-                            Daily Energy
-                          </Typography>
-                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            18.4 kWh
-                          </Typography>
-                        </Box>
-                      </Grid>
-                    </Grid>
+                    <DCMetricsChart />
                   </CardContent>
                 </Card>
               </Grid>
@@ -241,10 +159,17 @@ const PlantMeasures = () => {
                   padding: 2,
                 }}
               >
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Production Data
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: "1rem",
+                  }}
+                >
+                  Weather Metrics
                 </Typography>
-                <ChartSection />
+                <WeatherMetricsChart />
               </Card>
             </Box>
           )}
@@ -258,25 +183,15 @@ const PlantMeasures = () => {
                   padding: 2,
                 }}
               >
-                <Typography variant="h6" sx={{ mb: 2 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontFamily: "'Poppins', sans-serif",
+                    fontSize: "1rem",
+                  }}
+                >
                   Performance Data
-                </Typography>
-                <ChartSection />
-              </Card>
-            </Box>
-          )}
-
-          {activeTab === 3 && (
-            <Box sx={{ height: "auto" }}>
-              <Card
-                sx={{
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
-                  borderRadius: 2,
-                  padding: 2,
-                }}
-              >
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Comparison Data
                 </Typography>
                 <ChartSection />
               </Card>
@@ -288,7 +203,7 @@ const PlantMeasures = () => {
       <Box sx={{ flexGrow: 1 }} />
       <Footer />
     </Box>
-  );
-};
+  )
+}
 
-export default PlantMeasures;
+export default PlantMeasures

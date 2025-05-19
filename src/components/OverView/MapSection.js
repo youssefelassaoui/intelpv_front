@@ -1,85 +1,88 @@
-import React, { useState, useRef } from "react";
-import { Box, Card, Typography, Chip } from "@mui/material";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Tooltip,
-  useMap,
-} from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+"use client"
 
-// Plant locations with coordinates
+import { useState, useRef } from "react"
+import { Box, Card, Typography, Chip } from "@mui/material"
+import { MapContainer, TileLayer, Marker, Tooltip, useMap } from "react-leaflet"
+import L from "leaflet"
+import "leaflet/dist/leaflet.css"
+
+// Plant locations with coordinates - updated for our plants
 const plantLocations = [
   {
     id: 1,
     name: "Green & Smart Building Park",
-    coordinates: [32.2170, -7.9310], // Phoenix, AZ area
-    capacity: "12.5 MW",
-    color: "#2E7D32",
+    coordinates: [32.217, -7.931],
+    capacity: "6 kW",
+    color: "#129990",
   },
   {
     id: 2,
-    name: "Green Energy Park",
-    coordinates: [32.2207, -7.9287], // San Francisco, CA area
-    capacity: "8.2 MW",
-    color: "#66BB6A",
+    name: "Green Energy Park (Trina)",
+    coordinates: [32.2207, -7.9287],
+    capacity: "-- MW",
+    color: "#129990",
   },
   {
     id: 3,
-    name: "Hospital Universario Rien Sofía",
-    coordinates: [37.872, -4.7894], // Austin, TX area
-    capacity: "15.0 MW",
-    color: "#81C784",
+    name: "Hospital Universario..",
+    coordinates: [37.872, -4.7894],
+    capacity: "1.72 MW",
+    color: "#129990",
   },
   {
     id: 4,
-    name: "Mohammed VI Museum of Modern and Contemporary Art",
-    coordinates: [34.0136, -6.8373], // Las Vegas, NV area
-    capacity: "10.8 MW",
-    color: "#A5D6A7",
+    name: "Mohammed VI Museum",
+    coordinates: [34.0136, -6.8373],
+    capacity: "136 KW",
+    color: "#129990",
   },
   {
     id: 5,
     name: "Fkih ben saleh",
-    coordinates: [33.4538, -112.074], // Phoenix, AZ area (slightly offset)
-    capacity: "18.3 MW",
-    color: "#C8E6C9",
+    coordinates: [32.5779, -6.6217],
+    capacity: "400 KW",
+    color: "#129990",
   },
-];
+  {
+    id: 6,
+    name: "SESA Project",
+    coordinates: [32.2230987035737, -7.899800584375511], // Marrakech
+    capacity: "25 KW",
+    color: "#129990",
+  },
+]
 
 // Component to handle map fly to functionality
 function FlyToMarker({ coordinates }) {
-  const map = useMap();
-  map.flyTo(coordinates, 10, {
+  const map = useMap()
+  map.flyTo(coordinates, 15, {
     duration: 1.5,
-  });
-  return null;
+  })
+  return null
 }
 
 // Custom PV system icon
 const pvSystemIcon = new L.Icon({
   iconUrl: "/PvSysIcon.svg",
-  iconSize: [32, 32],
-  iconAnchor: [16, 16],
-  popupAnchor: [0, -16],
-});
+  iconSize: [28, 28], // Reduced from 32, 32
+  iconAnchor: [14, 14], // Adjusted for new size
+  popupAnchor: [0, -14], // Adjusted for new size
+})
 
 const MapSection = () => {
-  const [activeLocation, setActiveLocation] = useState(null);
-  const mapRef = useRef(null);
+  const [activeLocation, setActiveLocation] = useState(null)
+  const mapRef = useRef(null)
 
   const handleChipClick = (plant) => {
-    setActiveLocation(plant);
-  };
+    setActiveLocation(plant)
+  }
 
   return (
     <Card
       sx={{
-        p: 2,
+        p: 1.5, // Reduced from p: 2
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        height: "350px", // Reduced height
+        height: "320px", // Reduced from 350px
         display: "flex",
         flexDirection: "column",
       }}
@@ -87,9 +90,10 @@ const MapSection = () => {
       <Typography
         variant="h6"
         sx={{
-          fontSize: "16px",
+          fontSize: "14px", // Reduced from 16px
           fontFamily: "Poppins, sans-serif",
           fontWeight: 500,
+          mb: 1, // Added mb to reduce space
         }}
       >
         Plant Locations
@@ -106,8 +110,8 @@ const MapSection = () => {
 
       <Box sx={{ position: "relative", flexGrow: 1 }}>
         <MapContainer
-          center={[39.8283, -98.5795]} // Center of the US
-          zoom={4}
+          center={[33.5, -7.5]} // Centered on Morocco
+          zoom={5}
           scrollWheelZoom={true}
           minZoom={3} // Limit zoom out
           maxBounds={[
@@ -123,18 +127,14 @@ const MapSection = () => {
           />
 
           {plantLocations.map((plant) => (
-            <Marker
-              key={plant.id}
-              position={plant.coordinates}
-              icon={pvSystemIcon}
-            >
-              <Tooltip permanent direction="top" offset={[0, -16]}>
+            <Marker key={plant.id} position={plant.coordinates} icon={pvSystemIcon}>
+              <Tooltip permanent direction="top" offset={[0, -14]}>
                 <Box sx={{ textAlign: "center" }}>
                   <Box
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
-                      fontSize: "0.75rem",
+                      fontSize: "0.65rem", // Reduced from 0.75rem
                     }}
                   >
                     {plant.name}
@@ -144,24 +144,22 @@ const MapSection = () => {
             </Marker>
           ))}
 
-          {activeLocation && (
-            <FlyToMarker coordinates={activeLocation.coordinates} />
-          )}
+          {activeLocation && <FlyToMarker coordinates={activeLocation.coordinates} />}
         </MapContainer>
 
         {/* Centered chips positioned on top of the map */}
         <Box
           sx={{
             position: "absolute",
-            top: 10,
+            top: 8, // Reduced from 10
             left: 0,
             right: 0,
             zIndex: 1000,
             display: "flex",
-            gap: 1,
+            gap: 0.75, // Reduced from 1
             flexWrap: "wrap",
             justifyContent: "center", // Center the chips
-            px: 2, // Add some padding on the sides
+            px: 1.5, // Reduced from 2
           }}
         >
           {plantLocations.map((plant) => (
@@ -170,21 +168,16 @@ const MapSection = () => {
               label={plant.name}
               onClick={() => handleChipClick(plant)}
               sx={{
-                backgroundColor:
-                  activeLocation?.id === plant.id
-                    ? plant.color
-                    : "rgba(255, 255, 255, 0.9)",
+                backgroundColor: activeLocation?.id === plant.id ? plant.color : "rgba(255, 255, 255, 0.9)",
                 color: activeLocation?.id === plant.id ? "white" : "#333",
                 border: `1px solid ${plant.color}`,
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 500,
-                fontSize: "0.75rem",
+                fontSize: "0.65rem", // Reduced from 0.75rem
+                height: "24px", // Added to reduce height
                 boxShadow: "0 1px 3px rgba(0,0,0,0.2)", // Add shadow for better visibility
                 "&:hover": {
-                  backgroundColor:
-                    activeLocation?.id === plant.id
-                      ? plant.color
-                      : "rgba(255, 255, 255, 1)",
+                  backgroundColor: activeLocation?.id === plant.id ? plant.color : "rgba(255, 255, 255, 1)",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
                 },
               }}
@@ -193,7 +186,7 @@ const MapSection = () => {
         </Box>
       </Box>
     </Card>
-  );
-};
+  )
+}
 
-export default MapSection;
+export default MapSection

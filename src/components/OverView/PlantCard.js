@@ -1,16 +1,7 @@
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Chip,
-  Stack,
-  Divider,
-  Box,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import { LocationOn, BoltOutlined } from "@mui/icons-material";
-import { Columns4 } from "lucide-react"; // Import Columns4 from lucide-react
+import { Card, CardContent, CardMedia, Typography, Chip, Stack, Divider, Box } from "@mui/material"
+import { styled } from "@mui/material/styles"
+import { LocationOn, BoltOutlined } from "@mui/icons-material"
+import { Columns4 } from "lucide-react" // Import Columns4 from lucide-react
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -23,12 +14,12 @@ const StyledCard = styled(Card)(({ theme }) => ({
     transform: "translateY(-4px)",
     boxShadow: theme.shadows[8],
   },
-}));
+}))
 
 const StyledCardMedia = styled(CardMedia)({
   paddingTop: "56.25%",
   position: "relative",
-});
+})
 
 const StatusChip = styled(Chip)(({ theme, status }) => ({
   position: "absolute",
@@ -39,7 +30,7 @@ const StatusChip = styled(Chip)(({ theme, status }) => ({
   fontFamily: "'Poppins', sans-serif",
   fontWeight: 500,
   fontSize: "0.75rem",
-}));
+}))
 
 const InfoRow = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -47,7 +38,7 @@ const InfoRow = styled(Box)(({ theme }) => ({
   gap: theme.spacing(0.5),
   color: theme.palette.text.secondary,
   marginBottom: theme.spacing(0.5),
-}));
+}))
 
 const PlantCard = ({ plant }) => {
   return (
@@ -95,7 +86,6 @@ const PlantCard = ({ plant }) => {
             </Typography>
           </InfoRow>
           <InfoRow>
-            {/* Replace PowerOutlined with Columns4 from lucide-react */}
             <Columns4 size={16} />
             <Typography
               variant="body2"
@@ -133,19 +123,19 @@ const PlantCard = ({ plant }) => {
           label="View Details"
           size="small"
           sx={{
-            backgroundColor: "#2E7D32",
+            backgroundColor: "#129990",
             color: "white",
             fontFamily: "'Poppins', sans-serif",
             fontSize: "0.7rem",
             height: "24px",
             "&:hover": {
-              backgroundColor: "#1B5E20",
+              backgroundColor: "#096B68",
             },
           }}
         />
       </Box>
     </StyledCard>
-  );
-};
+  )
+}
 
-export default PlantCard;
+export default PlantCard

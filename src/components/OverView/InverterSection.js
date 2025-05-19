@@ -1,47 +1,47 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
 import { Box, Card, Typography, Chip, Grid } from "@mui/material";
 
-// Inverter image paths and names
+// Inverter image paths and names for our plants
 const inverterData = {
-  "Solar Farm Alpha": {
-    images: ["/SUN2000-100KTL-M1-removebg-preview.png"],
+  "Green & Smart..": {
+    images: ["/SUN2000-20KTL-M0.png"],
+    names: ["SUN2000-20KTL-M0"],
+    color: "#129990",
+  },
+  "Green Energy Park (Trina)": {
+    images: ["/SUN2000-100KTL-M1.png"],
     names: ["SUN2000-100KTL-M1"],
-    color: "#2E7D32",
+    color: "#129990",
   },
-  "Sunlight Beta Station": {
-    images: [
-      "/SUN2000-20KTL-M0-removebg-preview.png",
-      "/SUN2000-60KTL-M0-removebg-preview.png",
-    ],
-    names: ["SUN2000-20KTL-M0", "SUN2000-60KTL-M0"],
-    color: "#66BB6A",
+  "Hospital Universario..": {
+    images: ["/SUN2000-60KTL-M0.png", "/SUN2000L-5KTL.png"],
+    names: ["SUN2000-60KTL-M0", "SUN2000L-5KTL"],
+    color: "#129990",
   },
-  "Green Energy Park": {
-    images: [
-      "/SUN2000L-5KTL-removebg-preview.png",
-      "/SUN2000-60KTL-M0-removebg-preview.png",
-    ],
-    names: ["SUN2000L-5KTL", "SUN2000-60KTL-M0"],
-    color: "#81C784",
+  "Mohammed VI Museum": {
+    images: ["/SUN2000L-5KTL.png"],
+    names: ["SUN2000L-5KTL"],
+    color: "#129990",
   },
-  "Solar Valley Plant": {
-    images: ["/SUN2000-60KTL-M0-removebg-preview.png"],
-    names: ["SUN2000-60KTL-M0"],
-    color: "#A5D6A7",
+  "Fkih ben saleh": {
+    images: ["/SUN2000-60KTL-M0.png", "/SUN2000-20KTL-M0.png"],
+    names: ["SUN2000-60KTL-M0", "SUN2000-20KTL-M0"],
+    color: "#129990",
   },
-  "Desert Sun Complex": {
-    images: [
-      "/SUN2000-20KTL-M0-removebg-preview.png",
-      "/SUN2000-100KTL-M1-removebg-preview.png",
-    ],
-    names: ["SUN2000-20KTL-M0", "SUN2000-100KTL-M1"],
-    color: "#C8E6C9",
+  "SESA Project": {
+    images: ["/sesa.webp"],
+    names: [" DEYE SUN-8K-SG04LP3-EU"],
+    color: "#129990",
   },
 };
 
 const InverterSection = () => {
   // State to keep track of selected plant
-  const [selectedPlant, setSelectedPlant] = useState("Solar Farm Alpha");
+  const [selectedPlant, setSelectedPlant] = useState(
+    "Green & Smart Building Park"
+  );
 
   // Chip click handler
   const handleChipClick = (plant) => {
@@ -57,96 +57,73 @@ const InverterSection = () => {
     const { images, names } = inverterData[selectedPlant];
 
     return (
-      <Box
-        sx={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+      <Grid
+        container
+        spacing={1}
+        justifyContent="center"
+        alignItems="center"
+        sx={{ maxWidth: "100%" }}
       >
-        <Grid
-          container
-          spacing={1} // Reduced spacing between grid items
-          justifyContent="center"
-          alignItems="center"
-          sx={{ maxWidth: "100%" }} // Ensure grid doesn't exceed container width
-        >
-          {images.map((imgSrc, index) => (
-            <Grid
-              item
-              xs={5.5} // Reduced from 6 to 5.5 to prevent overflow
-              key={`${selectedPlant}-${index}`}
+        {images.map((imgSrc, index) => (
+          <Grid
+            item
+            xs={5.5}
+            key={`${selectedPlant}-${index}`}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src={imgSrc || "/placeholder.svg"}
+              alt={`Inverter ${names[index]}`}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "180px",
+                objectFit: "contain",
+              }}
+            />
+            <Typography
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
+                mt: 0.5,
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: "0.65rem",
+                fontWeight: 500,
+                color: "#333",
+                textAlign: "center",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                width: "100%",
+                whiteSpace: "nowrap",
               }}
             >
-              <Box
-                sx={{
-                  backgroundColor: "white",
-                  borderRadius: 1,
-                  p: 1,
-                  height: "110px", // Slightly reduced height
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                }}
-              >
-                <img
-                  src={imgSrc || "/placeholder.svg"}
-                  alt={`Inverter ${names[index]}`}
-                  style={{
-                    maxWidth: "90%", // Reduced from 100% to 90%
-                    maxHeight: "90px", // Reduced from 100px to 90px
-                    objectFit: "contain",
-                  }}
-                />
-              </Box>
-              <Typography
-                sx={{
-                  mt: 1,
-                  fontFamily: "'Poppins', sans-serif",
-                  fontSize: "0.7rem", // Reduced font size slightly
-                  fontWeight: 500,
-                  color: "#333",
-                  textAlign: "center",
-                  // Ensure text doesn't overflow
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  width: "100%",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {names[index]}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+              {names[index]}
+            </Typography>
+          </Grid>
+        ))}
+      </Grid>
     );
   };
 
   return (
     <Card
       sx={{
-        p: 2,
+        p: 1.5,
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        height: "350px",
+        height: "320px",
         display: "flex",
         flexDirection: "column",
-        overflow: "hidden", // Prevent any overflow
+        overflow: "hidden",
       }}
     >
       <Typography
         variant="h6"
         sx={{
-          fontSize: "16px",
+          fontSize: "14px",
           fontFamily: "Poppins, sans-serif",
           fontWeight: 500,
+          mb: 1,
         }}
       >
         Plant Inverters
@@ -157,8 +134,8 @@ const InverterSection = () => {
         sx={{
           display: "flex",
           flexWrap: "wrap",
-          gap: 1,
-          mb: 2,
+          gap: 0.75,
+          mb: 1.5,
           justifyContent: "center",
         }}
       >
@@ -176,7 +153,8 @@ const InverterSection = () => {
               border: `1px solid ${inverterData[plant].color}`,
               fontFamily: "'Poppins', sans-serif",
               fontWeight: 500,
-              fontSize: "0.75rem",
+              fontSize: "0.65rem",
+              height: "24px",
               boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
               "&:hover": {
                 backgroundColor:
@@ -190,7 +168,7 @@ const InverterSection = () => {
         ))}
       </Box>
 
-      {/* Inverter Images - Now with vertical centering and reduced width */}
+      {/* Inverter Images */}
       <Box
         sx={{
           flexGrow: 1,
@@ -198,7 +176,7 @@ const InverterSection = () => {
           alignItems: "center",
           justifyContent: "center",
           width: "100%",
-          overflow: "hidden", // Prevent scrolling
+          overflow: "hidden",
         }}
       >
         {renderInverters()}

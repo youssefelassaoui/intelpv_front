@@ -1,5 +1,4 @@
-import React from "react";
-import { Box, Container, Typography, Card, Grid } from "@mui/material";
+import { Box, Typography, Card, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Navbar from "../components/GloabalComponents/Navbar";
 import PlantCard from "../components/OverView/PlantCard";
@@ -13,17 +12,46 @@ import {
   WarningAmberOutlined,
 } from "@mui/icons-material";
 
+// Update the StatsCard styled component to reduce padding and height
 const StatsCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(2),
+  padding: theme.spacing(1), // Reduced from 2
   display: "flex",
   alignItems: "center",
-  gap: theme.spacing(1.5),
+  gap: theme.spacing(1), // Reduced from 1.5
   backgroundColor: "white",
   transition: "all 0.3s ease-in-out",
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: theme.shadows[4],
   },
+}));
+
+// Horizontal scrollable container for plant cards
+const ScrollableContainer = styled(Box)(({ theme }) => ({
+  display: "flex",
+  overflowX: "auto",
+  gap: theme.spacing(1.5), // Reduced from 2
+  padding: theme.spacing(0.5, 0), // Reduced from 1, 0
+  "&::-webkit-scrollbar": {
+    height: "6px",
+  },
+  "&::-webkit-scrollbar-track": {
+    backgroundColor: "#f1f1f1",
+    borderRadius: "10px",
+  },
+  "&::-webkit-scrollbar-thumb": {
+    backgroundColor: "#c1c1c1",
+    borderRadius: "10px",
+    "&:hover": {
+      backgroundColor: "#a8a8a8",
+    },
+  },
+}));
+
+// Card wrapper to set fixed width
+const CardWrapper = styled(Box)(({ theme }) => ({
+  width: "280px",
+  flexShrink: 0,
 }));
 
 // Static Data
@@ -42,8 +70,8 @@ const plants = [
     name: "Green Energy Park (Trina)",
     image: "/trina.jpg",
     location: "Route Régionale Kelaa Km 3, R206, Ben Guerir, MO",
-    capacity: "-- MW",
-    strings: "6",
+    capacity: "22.23 kW",
+    strings: 6,
     status: "Active",
   },
   {
@@ -56,12 +84,22 @@ const plants = [
     status: "Maintenance",
   },
   {
+    id: 6,
+    name: "SESA Project",
+    image: "/douar.jpeg",
+    location: "64F2+734, Ben Guerir",
+    capacity: "25 KW",
+    strings: 2,
+    status: "Active",
+  },
+  {
     id: 4,
     name: "Mohammed VI Museum of Modern and Contemporary Art",
     image: "/musee.jpg",
     location: " 2 Av. Moulay Hassan, Rabat, MO",
     capacity: "136 KW",
     strings: 20,
+
     status: "Active",
   },
   {
@@ -73,12 +111,13 @@ const plants = [
     strings: "12",
     status: "Active",
   },
+  // New card added
 ];
 
 const Overview = () => {
   // Calculate summary statistics
   const totalCapacity = plants.reduce((sum, plant) => {
-    return sum + parseFloat(plant.capacity);
+    return sum + Number.parseFloat(plant.capacity);
   }, 0);
   //   const totalStrings = plants.reduce((sum, plant) => sum + plant.strings, 0);
   const maintenanceCount = plants.filter(
@@ -115,20 +154,24 @@ const Overview = () => {
           }}
         >
           {/* Header Section */}
-          <Grid container spacing={2} sx={{ mb: 2 }}>
+          {/* Replace the Stats Cards Grid section with this updated version */}
+          <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
+            {" "}
+            {/* Reduced spacing from 2 to 1.5 */}
             <Grid item xs={12} sm={4}>
               <StatsCard>
                 <Box
                   sx={{
                     backgroundColor: "rgba(46, 125, 50, 0.1)",
                     borderRadius: "50%",
-                    p: 1,
+                    p: 0.75, // Reduced from 1
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <BoltOutlined sx={{ fontSize: 24, color: "#2E7D32" }} />
+                  <BoltOutlined sx={{ fontSize: 20, color: "#2E7D32" }} />{" "}
+                  {/* Reduced from 24 */}
                 </Box>
                 <Box>
                   <Typography
@@ -136,7 +179,8 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       color: "text.secondary",
-                      fontSize: "0.75rem",
+                      fontSize: "0.65rem", // Reduced from 0.75rem
+                      lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
                     Total Capacity
@@ -147,27 +191,29 @@ const Overview = () => {
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
                       color: "#2E7D32",
+                      fontSize: "0.9rem", // Reduced from default h6 size
+                      lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
-                    {totalCapacity.toFixed(1)} MW
+                    2.31 MW
                   </Typography>
                 </Box>
               </StatsCard>
             </Grid>
-
             <Grid item xs={12} sm={4}>
               <StatsCard>
                 <Box
                   sx={{
                     backgroundColor: "rgba(46, 125, 50, 0.1)",
                     borderRadius: "50%",
-                    p: 1,
+                    p: 0.75, // Reduced from 1
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <PowerOutlined sx={{ fontSize: 24, color: "#2E7D32" }} />
+                  <PowerOutlined sx={{ fontSize: 20, color: "#2E7D32" }} />{" "}
+                  {/* Reduced from 24 */}
                 </Box>
                 <Box>
                   <Typography
@@ -175,7 +221,8 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       color: "text.secondary",
-                      fontSize: "0.75rem",
+                      fontSize: "0.65rem", // Reduced from 0.75rem
+                      lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
                     Total Strings
@@ -186,29 +233,31 @@ const Overview = () => {
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
                       color: "#33372C",
+                      fontSize: "0.9rem", // Reduced from default h6 size
+                      lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
-                    315{" "}
+                    317
                   </Typography>
                 </Box>
               </StatsCard>
             </Grid>
-
             <Grid item xs={12} sm={4}>
               <StatsCard>
                 <Box
                   sx={{
                     backgroundColor: "rgba(255, 152, 0, 0.1)",
                     borderRadius: "50%",
-                    p: 1,
+                    p: 0.75, // Reduced from 1
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
                   <WarningAmberOutlined
-                    sx={{ fontSize: 24, color: "#FF9800" }}
-                  />
+                    sx={{ fontSize: 20, color: "#FF9800" }}
+                  />{" "}
+                  {/* Reduced from 24 */}
                 </Box>
                 <Box>
                   <Typography
@@ -216,7 +265,8 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       color: "text.secondary",
-                      fontSize: "0.75rem",
+                      fontSize: "0.65rem", // Reduced from 0.75rem
+                      lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
                     In Maintenance
@@ -227,6 +277,8 @@ const Overview = () => {
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
                       color: "#FF9800",
+                      fontSize: "0.9rem", // Reduced from default h6 size
+                      lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
                     {maintenanceCount} Plants
@@ -236,25 +288,25 @@ const Overview = () => {
             </Grid>
           </Grid>
 
-          {/* Plants Cards Section */}
-          <Box sx={{ mb: 1.5 }}>
-            <Grid container spacing={1.5}>
+          {/* Plants Cards Section - SINGLE ROW WITH HORIZONTAL SCROLL */}
+          <Box sx={{ mb: 1 }}>
+            <ScrollableContainer>
               {plants.map((plant) => (
-                <Grid item xs={12} sm={6} md={2.4} key={plant.id}>
+                <CardWrapper key={plant.id}>
                   <PlantCard plant={plant} />
-                </Grid>
+                </CardWrapper>
               ))}
-            </Grid>
+            </ScrollableContainer>
           </Box>
 
           {/* Charts Section */}
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1.5 }}>
             <ChartSection />
           </Box>
 
           {/* Map and Inverter Section */}
           <Box>
-            <Grid container spacing={2}>
+            <Grid container spacing={1.5}>
               <Grid item xs={12} md={8}>
                 <MapSection />
               </Grid>

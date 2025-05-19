@@ -1,74 +1,83 @@
-import React from "react";
-import { Box, Typography, Card, Divider } from "@mui/material";
-import { TrendingUp, TrendingDown, InfoOutlined } from "@mui/icons-material";
+import { Box, Typography, Card, Divider } from "@mui/material"
+import { TrendingUp, TrendingDown, InfoOutlined } from "@mui/icons-material"
 
 const ProductionComparison = () => {
   // Get current date for the week display
-  const currentDate = new Date();
-  const lastWeekDate = new Date(currentDate);
-  lastWeekDate.setDate(currentDate.getDate() - 7);
+  const currentDate = new Date()
+  const lastWeekDate = new Date(currentDate)
+  lastWeekDate.setDate(currentDate.getDate() - 7)
 
   // Format dates for display
   const formatDate = (date) => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  }
 
-  const currentWeekStart = formatDate(lastWeekDate);
-  const currentWeekEnd = formatDate(currentDate);
+  const currentWeekStart = formatDate(lastWeekDate)
+  const currentWeekEnd = formatDate(currentDate)
 
+  // Use our plant data from the previous components
   const plants = [
     {
-      name: "Solar Farm Alpha",
-      production: "12.5",
-      change: "+2.3",
+      name: "Green & Smart..",
+      production: "5.8",
+      change: "+0.6",
       trend: "up",
-      color: "#2E7D32",
+      color: "#48A6A7",
     },
     {
-      name: "Sunlight Beta Station",
-      production: "8.2",
-      change: "-1.5",
+      name: "Green Energy Park (Trina)",
+      production: "12.3",
+      change: "-0.8",
       trend: "down",
-      color: "#66BB6A",
+      color: "#6EC3C4",
     },
     {
-      name: "Green Energy Park",
-      production: "15.0",
-      change: "+3.2",
+      name: "Hospital Universario..",
+      production: "15.4",
+      change: "+2.1",
       trend: "up",
-      color: "#81C784",
+      color: "#7BD8C6",
     },
     {
-      name: "Solar Valley Plant",
-      production: "10.8",
-      change: "+0.8",
+      name: "Mohammed VI Museum",
+      production: "11.2",
+      change: "+0.9",
       trend: "up",
-      color: "#A5D6A7",
+      color: "#B7ECEC",
     },
     {
-      name: "Desert Sun Complex",
-      production: "18.3",
-      change: "-0.7",
+      name: "Fkih ben saleh",
+      production: "8.7",
+      change: "-0.5",
       trend: "down",
-      color: "#C8E6C9",
+      color: "#63AEE2",
     },
-  ];
+    {
+      name: "SESA Project",
+      production: "7.5",
+      change: "+1.2",
+      trend: "up",
+      color: "#5C8FA6",
+    },
+  ]
 
   return (
     <Card
       sx={{
-        p: 2,
+        p: 1.5, // Reduced from p: 2
         height: "100%",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 1.5 }}>
+        {" "}
+        {/* Reduced from mb: 2 */}
         <Typography
           variant="h6"
           sx={{
-            fontSize: "16px",
+            fontSize: "14px", // Reduced from 16px
             fontFamily: "Poppins, sans-serif",
             fontWeight: 500,
           }}
@@ -88,40 +97,43 @@ const ProductionComparison = () => {
             sx={{
               fontFamily: "'Poppins', sans-serif",
               color: "text.secondary",
-              fontSize: "0.75rem",
+              fontSize: "0.65rem", // Reduced from 0.75rem
             }}
           >
             {currentWeekStart} - {currentWeekEnd} vs previous week
           </Typography>
           <InfoOutlined
             sx={{
-              fontSize: 14,
+              fontSize: 12, // Reduced from 14
               color: "text.secondary",
               cursor: "help",
             }}
           />
         </Box>
       </Box>
-
-      <Box sx={{ mb: 2, display: "flex", justifyContent: "space-between" }}>
+      <Box sx={{ mb: 1, display: "flex", justifyContent: "space-between" }}>
+        {" "}
+        {/* Reduced from mb: 2 */}
         <Typography
           sx={{
             fontFamily: "'Poppins', sans-serif",
-            fontSize: "0.75rem",
+            fontSize: "0.65rem", // Reduced from 0.75rem
             color: "text.secondary",
             fontWeight: 500,
           }}
         >
           PLANT
         </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{ display: "flex", gap: 1.5 }}>
+          {" "}
+          {/* Reduced from gap: 2 */}
           <Typography
             sx={{
               fontFamily: "'Poppins', sans-serif",
-              fontSize: "0.75rem",
+              fontSize: "0.65rem", // Reduced from 0.75rem
               color: "text.secondary",
               fontWeight: 500,
-              width: "60px",
+              width: "55px", // Reduced from 60px
               textAlign: "right",
             }}
           >
@@ -130,10 +142,10 @@ const ProductionComparison = () => {
           <Typography
             sx={{
               fontFamily: "'Poppins', sans-serif",
-              fontSize: "0.75rem",
+              fontSize: "0.65rem", // Reduced from 0.75rem
               color: "text.secondary",
               fontWeight: 500,
-              width: "50px",
+              width: "45px", // Reduced from 50px
               textAlign: "right",
             }}
           >
@@ -141,14 +153,12 @@ const ProductionComparison = () => {
           </Typography>
         </Box>
       </Box>
-
-      <Divider sx={{ mb: 2 }} />
-
+      <Divider sx={{ mb: 1 }} /> {/* Reduced from mb: 2 */}
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 1,
+          gap: 0.75, // Reduced from gap: 1
           flexGrow: 1,
           justifyContent: "space-between", // Distribute items evenly
         }}
@@ -160,7 +170,7 @@ const ProductionComparison = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              p: 1,
+              p: 0.75, // Reduced from p: 1
               borderRadius: 1,
               backgroundColor: "rgba(0,0,0,0.02)",
               transition: "all 0.3s ease",
@@ -169,11 +179,13 @@ const ProductionComparison = () => {
               },
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+              {" "}
+              {/* Reduced from gap: 1 */}
               <Box
                 sx={{
                   width: 3,
-                  height: 24,
+                  height: 20, // Reduced from 24
                   backgroundColor: plant.color,
                   borderRadius: 1,
                 }}
@@ -181,45 +193,51 @@ const ProductionComparison = () => {
               <Typography
                 sx={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontSize: "0.875rem",
+                  fontSize: "0.8rem", // Reduced from 0.875rem
                   color: "#333",
+                  maxWidth: "120px", // Added to prevent overflow
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
                 }}
               >
                 {plant.name}
               </Typography>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              {" "}
+              {/* Reduced from gap: 2 */}
               <Typography
                 sx={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontSize: "0.875rem",
+                  fontSize: "0.8rem", // Reduced from 0.875rem
                   fontWeight: 600,
                   color: "#333",
-                  width: "60px",
+                  width: "55px", // Reduced from 60px
                   textAlign: "right",
                 }}
               >
-                {plant.production} MW
+                {plant.production} kW
               </Typography>
               <Box
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 0.5,
+                  gap: 0.25, // Reduced from 0.5
                   color: plant.trend === "up" ? "#2E7D32" : "#d32f2f",
-                  width: "50px",
+                  width: "45px", // Reduced from 50px
                   justifyContent: "flex-end",
                 }}
               >
                 {plant.trend === "up" ? (
-                  <TrendingUp sx={{ fontSize: 16 }} />
+                  <TrendingUp sx={{ fontSize: 14 }} /> // Reduced from 16
                 ) : (
-                  <TrendingDown sx={{ fontSize: 16 }} />
+                  <TrendingDown sx={{ fontSize: 14 }} /> // Reduced from 16
                 )}
                 <Typography
                   sx={{
                     fontFamily: "'Poppins', sans-serif",
-                    fontSize: "0.75rem",
+                    fontSize: "0.7rem", // Reduced from 0.75rem
                     fontWeight: 600,
                   }}
                 >
@@ -231,7 +249,7 @@ const ProductionComparison = () => {
         ))}
       </Box>
     </Card>
-  );
-};
+  )
+}
 
-export default ProductionComparison;
+export default ProductionComparison
