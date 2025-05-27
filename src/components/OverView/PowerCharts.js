@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { Box, Grid } from "@mui/material"
-import ReactApexChart from "react-apexcharts"
+import { Box, Grid } from "@mui/material";
+import ReactApexChart from "react-apexcharts";
 
 const PowerCharts = () => {
   // Generate 7 days of data with 5-minute intervals
   const generateWeekData = () => {
-    const data = []
-    const startDate = new Date(2025, 4, 12) // May 12, 2025
-    const maxPower = 25 // 25kW system
-    const minutesInDay = 24 * 60
-    const pointsPerDay = minutesInDay / 5 // Points every 5 minutes
-    const totalDays = 7
+    const data = [];
+    const startDate = new Date(2025, 4, 12); // May 12, 2025
+    const maxPower = 25; // 25kW system
+    const minutesInDay = 24 * 60;
+    const pointsPerDay = minutesInDay / 5; // Points every 5 minutes
+    const totalDays = 7;
 
     // Weather patterns for each day (0-1 scale, where 1 is perfect sunny day)
     const weatherPatterns = [
@@ -22,105 +22,119 @@ const PowerCharts = () => {
       0.75, // Day 5: Partly cloudy
       0.4, // Day 6: Mostly cloudy
       0.8, // Day 7: Mostly sunny
-    ]
+    ];
 
     for (let day = 0; day < totalDays; day++) {
-      const currentDate = new Date(startDate)
-      currentDate.setDate(startDate.getDate() + day)
-      const weatherFactor = weatherPatterns[day]
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + day);
+      const weatherFactor = weatherPatterns[day];
 
       for (let i = 0; i < pointsPerDay; i++) {
-        const minuteOfDay = i * 5
-        const hour = Math.floor(minuteOfDay / 60)
-        const minute = minuteOfDay % 60
+        const minuteOfDay = i * 5;
+        const hour = Math.floor(minuteOfDay / 60);
+        const minute = minuteOfDay % 60;
 
-        const date = new Date(currentDate)
-        date.setHours(hour, minute, 0, 0)
+        const date = new Date(currentDate);
+        date.setHours(hour, minute, 0, 0);
 
-        const timeOfDay = hour + minute / 60
-        let generationValue, consumptionValue
+        const timeOfDay = hour + minute / 60;
+        let generationValue, consumptionValue;
 
         // Generation values based on time of day and weather
         if (timeOfDay >= 6 && timeOfDay <= 19) {
           // Daytime generation (6 AM to 7 PM)
-          const peakHour = 13 // Peak at 1 PM
-          const hourDiff = Math.abs(timeOfDay - peakHour)
+          const peakHour = 13; // Peak at 1 PM
+          const hourDiff = Math.abs(timeOfDay - peakHour);
 
           // Bell curve for solar generation
-          const bellCurve = Math.exp(-Math.pow(hourDiff, 2) / 8)
+          const bellCurve = Math.exp(-Math.pow(hourDiff, 2) / 8);
 
           // Apply weather factor and small random variations
-          generationValue = maxPower * bellCurve * weatherFactor * (0.97 + Math.random() * 0.06)
+          generationValue =
+            maxPower *
+            bellCurve *
+            weatherFactor *
+            (0.97 + Math.random() * 0.06);
 
           // Add some cloud passing effects (occasional dips)
           if (Math.random() < 0.05 && weatherFactor < 0.9) {
-            generationValue *= 0.5 + Math.random() * 0.3
+            generationValue *= 0.5 + Math.random() * 0.3;
           }
         } else {
           // Night time generation (7 PM to 6 AM)
-          generationValue = 0
+          generationValue = 0;
         }
 
         // Consumption values based on time of day
         if (timeOfDay >= 6 && timeOfDay <= 9) {
           // Morning peak (6 AM to 9 AM)
-          consumptionValue = maxPower * (0.4 + Math.random() * 0.15)
+          consumptionValue = maxPower * (0.4 + Math.random() * 0.15);
         } else if (timeOfDay >= 17 && timeOfDay <= 22) {
           // Evening peak (5 PM to 10 PM)
-          consumptionValue = maxPower * (0.5 + Math.random() * 0.2)
+          consumptionValue = maxPower * (0.5 + Math.random() * 0.2);
         } else if (timeOfDay >= 23 || timeOfDay <= 5) {
           // Night time (11 PM to 5 AM)
-          consumptionValue = maxPower * (0.08 + Math.random() * 0.07)
+          consumptionValue = maxPower * (0.08 + Math.random() * 0.07);
         } else {
           // Day time base load
-          consumptionValue = maxPower * (0.25 + Math.random() * 0.1)
+          consumptionValue = maxPower * (0.25 + Math.random() * 0.1);
         }
 
         // Add small variations for consecutive readings
         if (data.length > 0) {
-          const lastGen = data[data.length - 1].generation
-          const lastCons = data[data.length - 1].consumption
+          const lastGen = data[data.length - 1].generation;
+          const lastCons = data[data.length - 1].consumption;
 
           // Limit how much values can change in 5 minutes (smoother curves)
-          const maxChange = 0.5 // Maximum 0.5 kW change in 5 minutes
+          const maxChange = 0.5; // Maximum 0.5 kW change in 5 minutes
 
           if (Math.abs(generationValue - lastGen) > maxChange) {
-            generationValue = lastGen + Math.sign(generationValue - lastGen) * maxChange * Math.random()
+            generationValue =
+              lastGen +
+              Math.sign(generationValue - lastGen) * maxChange * Math.random();
           }
 
           if (Math.abs(consumptionValue - lastCons) > maxChange) {
-            consumptionValue = lastCons + Math.sign(consumptionValue - lastCons) * maxChange * Math.random()
+            consumptionValue =
+              lastCons +
+              Math.sign(consumptionValue - lastCons) *
+                maxChange *
+                Math.random();
           }
         }
 
         data.push({
           date: date.toISOString(),
-          generation: Number.parseFloat(Math.min(maxPower, Math.max(0, generationValue)).toFixed(2)),
-          consumption: Number.parseFloat(Math.min(maxPower, Math.max(0, consumptionValue)).toFixed(2)),
-        })
+          generation: Number.parseFloat(
+            Math.min(maxPower, Math.max(0, generationValue)).toFixed(2)
+          ),
+          consumption: Number.parseFloat(
+            Math.min(maxPower, Math.max(0, consumptionValue)).toFixed(2)
+          ),
+        });
       }
     }
 
-    return data
-  }
+    return data;
+  };
 
-  const weekData = generateWeekData()
+  const weekData = generateWeekData();
 
   // Generate dates for x-axis ticks (one for each day)
   const generateDailyTicks = () => {
-    const ticks = []
-    const startDate = new Date(2025, 4, 12) // May 12, 2025
+    const ticks = [];
+    const startDate = new Date(2025, 4, 12); // May 12, 2025
 
     for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate)
-      date.setDate(startDate.getDate() + i)
-      ticks.push(date.getTime())
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      ticks.push(date.getTime());
     }
 
-    return ticks
-  }
+    return ticks;
+  };
 
-  const dailyTicks = generateDailyTicks()
+  const dailyTicks = generateDailyTicks();
 
   const chartOptions = {
     chart: {
@@ -254,7 +268,7 @@ const PowerCharts = () => {
         formatter: (value) => `${value.toFixed(2)} kW`, // Format to 2 decimal places
       },
     },
-  }
+  };
 
   const generationChart = {
     series: [
@@ -278,7 +292,7 @@ const PowerCharts = () => {
         },
       },
     },
-  }
+  };
 
   const consumptionChart = {
     series: [
@@ -302,13 +316,18 @@ const PowerCharts = () => {
         },
       },
     },
-  }
+  };
 
   return (
     <Box sx={{ mt: 2 }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <ReactApexChart options={generationChart.options} series={generationChart.series} type="area" height={300} />
+          <ReactApexChart
+            options={generationChart.options}
+            series={generationChart.series}
+            type="area"
+            height={300}
+          />
         </Grid>
         <Grid item xs={12} md={6}>
           <ReactApexChart
@@ -320,7 +339,7 @@ const PowerCharts = () => {
         </Grid>
       </Grid>
     </Box>
-  )
-}
+  );
+};
 
-export default PowerCharts
+export default PowerCharts;

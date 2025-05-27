@@ -1,23 +1,32 @@
-"use client"
-import { useState } from "react"
-import { Box, Container, Typography, Grid, Card, CardContent, Tabs, Tab } from "@mui/material"
-import Navbar from "../components/GloabalComponents/Navbar"
-import MetricsHeader from "../components/PlantMeasure/MetricsHeader"
-import Footer from "../components/GloabalComponents/Footer"
-import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker"
-import ChartSection from "../components/PlantMeasure/ChartSection"
-import PowerCharts from "../components/OverView/PowerCharts"
-import DCMetricsChart from "../components/PlantMeasure/DCMetricsChart"
-import WeatherMetricsChart from "../components/PlantMeasure/WeatherMetricsChart"
+"use client";
+import { useState } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Tabs,
+  Tab,
+} from "@mui/material";
+import Navbar from "../components/GloabalComponents/Navbar";
+import MetricsHeader from "../components/PlantMeasure/MetricsHeader";
+import Footer from "../components/GloabalComponents/Footer";
+import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker";
+import ChartSection from "../components/PlantMeasure/ChartSection";
+import PowerCharts from "../components/OverView/PowerCharts";
+import DCMetricsChart from "../components/PlantMeasure/DCMetricsChart";
+import WeatherMetricsChart from "../components/PlantMeasure/WeatherMetricsChart";
 
 const PlantMeasures = () => {
-  const [startDate, setStartDate] = useState(new Date("2023-08-25"))
-  const [endDate, setEndDate] = useState(new Date("2023-08-31"))
-  const [activeTab, setActiveTab] = useState(0)
+  const [startDate, setStartDate] = useState(new Date("2023-08-25"));
+  const [endDate, setEndDate] = useState(new Date("2023-08-31"));
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue)
-  }
+    setActiveTab(newValue);
+  };
 
   return (
     <Box
@@ -62,8 +71,8 @@ const PlantMeasures = () => {
               startDate={startDate}
               endDate={endDate}
               onRangeChange={(start, end) => {
-                setStartDate(start)
-                setEndDate(end)
+                setStartDate(start);
+                setEndDate(end);
               }}
             />
           </Grid>
@@ -203,7 +212,7 @@ const PlantMeasures = () => {
       <Box sx={{ flexGrow: 1 }} />
       <Footer />
     </Box>
-  )
-}
+  );
+};
 
-export default PlantMeasures
+export default PlantMeasures;
