@@ -1,7 +1,11 @@
 import { Box, Typography, Card, Divider } from "@mui/material"
 import { TrendingUp, TrendingDown, InfoOutlined } from "@mui/icons-material"
+import { useLanguage } from "../../contexts/LanguageContext"
+import { translations } from "../../translations"
 
 const ProductionComparison = () => {
+  const { language } = useLanguage()
+  const t = translations[language]
   // Get current date for the week display
   const currentDate = new Date()
   const lastWeekDate = new Date(currentDate)
@@ -82,7 +86,7 @@ const ProductionComparison = () => {
             fontWeight: 500,
           }}
         >
-          Weekly Production Comparison
+          {t.charts.weeklyProductionComparison}
         </Typography>
         <Box
           sx={{
@@ -100,7 +104,7 @@ const ProductionComparison = () => {
               fontSize: "0.65rem", // Reduced from 0.75rem
             }}
           >
-            {currentWeekStart} - {currentWeekEnd} vs previous week
+            {currentWeekStart} - {currentWeekEnd} {t.charts.vsPreviousWeek}
           </Typography>
           <InfoOutlined
             sx={{
@@ -122,7 +126,7 @@ const ProductionComparison = () => {
             fontWeight: 500,
           }}
         >
-          PLANT
+          {t.charts.plant}
         </Typography>
         <Box sx={{ display: "flex", gap: 1.5 }}>
           {" "}
@@ -137,7 +141,7 @@ const ProductionComparison = () => {
               textAlign: "right",
             }}
           >
-            CURRENT
+            {t.charts.current}
           </Typography>
           <Typography
             sx={{
@@ -149,7 +153,7 @@ const ProductionComparison = () => {
               textAlign: "right",
             }}
           >
-            WoW
+            {t.charts.wow}
           </Typography>
         </Box>
       </Box>

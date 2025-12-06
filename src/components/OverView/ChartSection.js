@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Box, Card, Typography } from "@mui/material";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 import ReactApexChart from "react-apexcharts";
 import CustomDateRangePicker from "../GloabalComponents/CustomDateRangePicker";
 import ProductionComparison from "./ProductionComparison";
@@ -118,6 +120,8 @@ plants.forEach((plant) => {
 });
 
 const ChartSection = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [barStartDate, setBarStartDate] = useState(new Date(2025, 4, 12));
   const [barEndDate, setBarEndDate] = useState(new Date(2025, 4, 18));
   const [donutStartDate, setDonutStartDate] = useState(new Date(2025, 4, 12));
@@ -258,7 +262,7 @@ const ChartSection = () => {
             show: true,
             total: {
               show: true,
-              label: "Total Energy",
+              label: t.charts.totalEnergy,
               fontSize: "12px",
               formatter: (w) =>
                 w.globals.seriesTotals
@@ -349,7 +353,7 @@ const ChartSection = () => {
                 fontWeight: 500,
               }}
             >
-              Daily Energy Production
+              {t.charts.dailyEnergyProduction}
             </Typography>
             <CustomDateRangePicker
               startDate={barStartDate}
@@ -394,7 +398,7 @@ const ChartSection = () => {
                 fontWeight: 500,
               }}
             >
-              Energy Distribution
+              {t.charts.energyDistribution}
             </Typography>
             <CustomDateRangePicker
               startDate={donutStartDate}

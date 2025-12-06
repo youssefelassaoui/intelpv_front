@@ -10,7 +10,8 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-import Navbar from "../components/GloabalComponents/Navbar";
+import { useLanguage } from "../contexts/LanguageContext";
+import { translations } from "../translations";
 import MetricsHeader from "../components/PlantMeasure/MetricsHeader";
 import Footer from "../components/GloabalComponents/Footer";
 import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker";
@@ -20,6 +21,8 @@ import DCMetricsChart from "../components/PlantMeasure/DCMetricsChart";
 import WeatherMetricsChart from "../components/PlantMeasure/WeatherMetricsChart";
 
 const PlantMeasures = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [startDate, setStartDate] = useState(new Date("2023-08-25"));
   const [endDate, setEndDate] = useState(new Date("2023-08-31"));
   const [activeTab, setActiveTab] = useState(0);
@@ -39,7 +42,6 @@ const PlantMeasures = () => {
         width: "100%",
       }}
     >
-      <Navbar />
       <MetricsHeader />
 
       {/* Date Range and Tabs Section */}
@@ -55,7 +57,7 @@ const PlantMeasures = () => {
                 fontSize: "1.2rem",
               }}
             >
-              Plant Measures
+              {t.plantMeasures.title}
             </Typography>
           </Grid>
           <Grid
@@ -99,9 +101,9 @@ const PlantMeasures = () => {
               },
             }}
           >
-            <Tab label="Energy Overview" />
-            <Tab label="Weather Metrics" />
-            <Tab label="Performance" />
+            <Tab label={t.plantMeasures.energyOverview} />
+            <Tab label={t.plantMeasures.weatherMetrics} />
+            <Tab label={t.plantMeasures.performance} />
             {/* <Tab label="Comparison" /> */}
           </Tabs>
         </Box>
@@ -127,7 +129,7 @@ const PlantMeasures = () => {
                         fontSize: "1rem",
                       }}
                     >
-                      Power Generation & Consumption
+                      {t.plantMeasures.powerGeneration}
                     </Typography>
                     <PowerCharts />
                   </CardContent>
@@ -150,7 +152,7 @@ const PlantMeasures = () => {
                         fontSize: "1rem",
                       }}
                     >
-                      DC Metrics
+                      {t.plantMeasures.dcMetrics}
                     </Typography>
                     <DCMetricsChart />
                   </CardContent>
@@ -176,7 +178,7 @@ const PlantMeasures = () => {
                     fontSize: "1rem",
                   }}
                 >
-                  Weather Metrics
+                  {t.plantMeasures.weatherMetricsTitle}
                 </Typography>
                 <WeatherMetricsChart />
               </Card>
@@ -200,7 +202,7 @@ const PlantMeasures = () => {
                     fontSize: "1rem",
                   }}
                 >
-                  Performance Data
+                  {t.plantMeasures.performanceData}
                 </Typography>
                 <ChartSection />
               </Card>

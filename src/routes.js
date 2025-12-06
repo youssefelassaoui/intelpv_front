@@ -1,38 +1,51 @@
 import Overview from "./pages/Overview";
 import WeatherStation from "./pages/WeatherStation";
 import PlantMeasures from "./pages/PlantMeasure";
-import PlantsList from "./pages/PlantsList"; // Placeholder for PlantsList
+import PlantsList from "./pages/PlantsList";
+import SignInPage from "./pages/SignIn";
 
 const routes = [
+  {
+    path: "/sign-in/*",
+    element: SignInPage,
+    exact: false,
+    protected: false,
+  },
   {
     path: "/",
     element: Overview,
     exact: true,
+    protected: true,
   },
   {
     path: "/overview",
     element: Overview,
     exact: true,
+    protected: true,
   },
   {
     path: "/plant-measures",
-    element: PlantMeasures, // Placeholder
+    element: PlantMeasures,
     exact: true,
+    protected: true,
   },
   {
     path: "/plants_list",
-    element: PlantsList, // Placeholder
+    element: PlantsList,
     exact: true,
+    protected: true,
   },
   {
     path: "/alarmes",
-    element: () => <div>Alarmes Page</div>, // Placeholder
+    element: () => <div>Alarmes Page</div>,
     exact: true,
+    protected: true,
   },
   {
     path: "/weather-station",
-    element: WeatherStation, // Placeholder
+    element: WeatherStation,
     exact: true,
+    protected: true,
   },
 ];
 

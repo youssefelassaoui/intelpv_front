@@ -1,7 +1,12 @@
 "use client";
 import { Box, Typography, Link } from "@mui/material";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 
 const Footer = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   return (
     <Box
       component="footer"
@@ -40,7 +45,7 @@ const Footer = () => {
             },
           }}
         >
-          © 2025, IntelligentPV - All rights reserved. Visit us at{" "}
+          {t.footer.copyright}{" "}
           <Link
             href="https://www.greenenergypark.ma/"
             target="_blank"

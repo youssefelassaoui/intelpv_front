@@ -12,7 +12,8 @@ import {
   Chip,
   Button,
 } from "@mui/material";
-import Navbar from "../components/GloabalComponents/Navbar";
+import { useLanguage } from "../contexts/LanguageContext";
+import { translations } from "../translations";
 import Footer from "../components/GloabalComponents/Footer";
 import {
   BoltOutlined,
@@ -25,6 +26,9 @@ import {
 } from "@mui/icons-material";
 
 const PlantCard = ({ plant, loading, onSelect }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   // Function to determine status icon and color
   const getStatusInfo = (status) => {
     switch (status) {
@@ -90,7 +94,12 @@ const PlantCard = ({ plant, loading, onSelect }) => {
                 }}
               />
               <Chip
-                label={plant.status}
+                label={
+                  plant.status === "Active" ? t.overview.status.active :
+                  plant.status === "Maintenance" ? t.overview.status.maintenance :
+                  plant.status === "Offline" ? t.overview.status.offline :
+                  plant.status
+                }
                 size="small"
                 icon={statusInfo.icon}
                 sx={{
@@ -170,7 +179,7 @@ const PlantCard = ({ plant, loading, onSelect }) => {
 
             {/* View Details Button */}
             <Chip
-              label="View Details"
+              label={t.plantList.viewDetails}
               size="small"
               icon={<ArrowForward sx={{ fontSize: 14 }} />}
               sx={{
@@ -200,6 +209,8 @@ const PlantCard = ({ plant, loading, onSelect }) => {
 };
 
 const PlantsList = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -301,7 +312,6 @@ const PlantsList = () => {
         overflow: "hidden",
       }}
     >
-      <Navbar />
       <Grid
         container
         sx={{
@@ -332,7 +342,7 @@ const PlantsList = () => {
                 fontSize: { xs: "1.5rem", sm: "2rem" }, // Responsive font size
               }}
             >
-              Solar Plants
+              {t.plantList.title}
             </Typography>
             <Typography
               variant="subtitle1"
@@ -344,8 +354,7 @@ const PlantsList = () => {
                 fontSize: { xs: "0.875rem", sm: "1rem" }, // Responsive font size
               }}
             >
-              Select a plant to view detailed measurements, performance
-              analytics, and operational insights
+              {t.plantList.subtitle}
             </Typography>
           </Box>
 

@@ -9,20 +9,22 @@ import {
   Box,
   Menu,
   MenuItem,
-  Chip,
-  Button,
+  Select,
+  FormControl,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { Link, useLocation } from "react-router-dom";
+import { UserButton } from "@clerk/clerk-react";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 import MenuIcon from "@mui/icons-material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import CloudIcon from "@mui/icons-material/Cloud";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HomeIcon from "@mui/icons-material/Home";
 import SolarPowerIcon from "@mui/icons-material/SolarPower";
 import WarningIcon from "@mui/icons-material/Warning";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
+import LanguageIcon from "@mui/icons-material/Language";
 
 const NavItem = styled(Typography)(({ theme, selected }) => ({
   display: "flex",
@@ -55,43 +57,12 @@ const NavItem = styled(Typography)(({ theme, selected }) => ({
   },
 }));
 
-const UserContainer = styled(Box)(({ open }) => ({
-  position: "relative",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: open ? "auto" : "40px",
-  transition: "width 0.3s ease-in-out",
-  overflow: "hidden",
-}));
-
-const UserChip = styled(Chip)(({ open }) => ({
-  position: "absolute",
-  right: 0,
-  opacity: open ? 1 : 0,
-  transform: open ? "translateX(0)" : "translateX(100%)",
-  transition: "all 0.3s ease-in-out",
-  backgroundColor: "#f5f5f5",
-  "& .MuiChip-deleteIcon": {
-    color: "#4A5568",
-  },
-}));
 
 export default function ToolbarComponent() {
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuAnchorEl, setMobileMenuAnchorEl] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
   const location = useLocation();
-
-  const handleUserMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-    setUserMenuOpen(!userMenuOpen);
-  };
-
-  const handleUserMenuClose = () => {
-    setAnchorEl(null);
-    setUserMenuOpen(false);
-  };
+  const { language, setLanguage } = useLanguage();
+  const t = translations[language];
 
   const handleMobileMenuOpen = (event) => {
     setMobileMenuAnchorEl(event.currentTarget);
@@ -101,26 +72,24 @@ export default function ToolbarComponent() {
     setMobileMenuAnchorEl(null);
   };
 
+  const handleLanguageChange = (event) => {
+    setLanguage(event.target.value);
+  };
+
   const navItems = [
     {
       path: "/overview",
-      label: "OVERVIEW",
+      label: t.nav.overview,
       icon: <DashboardIcon sx={{ fontSize: "1.2rem" }} />,
     },
     {
       path: "/plant-measures",
-      label: "PLANT-MEASURES",
+      label: t.nav.plantMeasures,
       icon: <EqualizerIcon sx={{ fontSize: "1.2rem" }} />,
     },
-
-    // {
-    //   path: "/weather-station",
-    //   label: "WEATHER STATION",
-    //   icon: <CloudIcon sx={{ fontSize: "1.2rem" }} />,
-    // },
     {
       path: "/alarms",
-      label: "ALARMS",
+      label: t.nav.alarms,
       icon: <WarningIcon sx={{ fontSize: "1.2rem" }} />,
     },
   ];
@@ -179,41 +148,37 @@ export default function ToolbarComponent() {
           ))}
         </Box>
 
-        {/* User Icon and Menu */}
-        <UserContainer
-          open={userMenuOpen}
-          sx={{ display: { xs: "none", md: "flex" } }}
-        >
-          <IconButton
-            sx={{ color: "black" }}
-            aria-label="user"
-            onClick={handleUserMenuClick}
-          >
-            <AccountCircle />
-          </IconButton>
-          <UserChip
-            open={userMenuOpen}
-            label="User Name"
-            deleteIcon={<ArrowDropDownIcon />}
-            onDelete={() => {}}
-          />
-        </UserContainer>
-
-        {/* User Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleUserMenuClose}
-          PaperProps={{
-            sx: {
-              mt: 1,
-              minWidth: 120,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            },
-          }}
-        >
-          <MenuItem onClick={handleUserMenuClose}>Déconnecter</MenuItem>
-        </Menu>
+        {/* Language Switcher and User Button */}
+        <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 2 }}>
+          <FormControl size="small" sx={{ minWidth: 100 }}>
+            <Select
+              value={language}
+              onChange={handleLanguageChange}
+              sx={{
+                height: "36px",
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: "0.75rem",
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#E2E8F0",
+                },
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#2E7D32",
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "#2E7D32",
+                },
+              }}
+            >
+              <MenuItem value="en" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.75rem" }}>
+                EN
+              </MenuItem>
+              <MenuItem value="fr" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.75rem" }}>
+                FR
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <UserButton />
+        </Box>
 
         {/* Mobile Menu */}
         <Menu
@@ -253,7 +218,6 @@ export default function ToolbarComponent() {
             </MenuItem>
           ))}
           <MenuItem
-            onClick={handleUserMenuClose}
             sx={{
               borderTop: "1px solid #E2E8F0",
               gap: 1,
@@ -261,8 +225,28 @@ export default function ToolbarComponent() {
               fontSize: "0.75rem",
             }}
           >
-            <AccountCircle sx={{ fontSize: "1.2rem" }} />
-            Déconnecter
+            <FormControl size="small" fullWidth>
+              <Select
+                value={language}
+                onChange={handleLanguageChange}
+                sx={{
+                  fontFamily: "'Poppins', sans-serif",
+                  fontSize: "0.75rem",
+                }}
+              >
+                <MenuItem value="en">EN</MenuItem>
+                <MenuItem value="fr">FR</MenuItem>
+              </Select>
+            </FormControl>
+          </MenuItem>
+          <MenuItem
+            sx={{
+              gap: 1,
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: "0.75rem",
+            }}
+          >
+            <UserButton />
           </MenuItem>
         </Menu>
       </Toolbar>

@@ -10,7 +10,9 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { LocationOn, BoltOutlined } from "@mui/icons-material";
-import { Columns4 } from "lucide-react"; // Import Columns4 from lucide-react
+import { Columns4 } from "lucide-react";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -50,10 +52,17 @@ const InfoRow = styled(Box)(({ theme }) => ({
 }));
 
 const PlantCard = ({ plant }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
+  const getTranslatedStatus = (status) => {
+    return status === "Active" ? t.overview.status.active : t.overview.status.maintenance;
+  };
+  
   return (
     <StyledCard>
       <StyledCardMedia image={plant.image} title={plant.name}>
-        <StatusChip label={plant.status} status={plant.status} size="small" />
+        <StatusChip label={getTranslatedStatus(plant.status)} status={plant.status} size="small" />
       </StyledCardMedia>
       <CardContent sx={{ flexGrow: 1, p: 1.5 }}>
         <Typography
@@ -91,7 +100,7 @@ const PlantCard = ({ plant }) => {
                 fontSize: "0.75rem",
               }}
             >
-              Capacity: {plant.capacity}
+              {t.common.capacity}: {plant.capacity}
             </Typography>
           </InfoRow>
           <InfoRow>
@@ -103,7 +112,7 @@ const PlantCard = ({ plant }) => {
                 fontSize: "0.75rem",
               }}
             >
-              {plant.strings} Strings
+              {plant.strings} {t.common.strings}
             </Typography>
           </InfoRow>
         </Stack>
@@ -123,13 +132,14 @@ const PlantCard = ({ plant }) => {
           sx={{
             fontFamily: "'Poppins', sans-serif",
             color: "text.secondary",
-            fontSize: "0.7rem",
+            fontSize: "0.6rem",
+            whiteSpace: "nowrap",
           }}
         >
-          Last updated: 2h ago
+          {t.common.lastUpdated}: 2h {t.common.ago}
         </Typography>
         <Chip
-          label="View Details"
+          label={t.common.viewDetails}
           size="small"
           sx={{
             backgroundColor: "#129990",

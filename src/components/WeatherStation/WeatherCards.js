@@ -1,6 +1,8 @@
 "use client";
 import { Grid, Card, Typography, Box } from "@mui/material";
 import Skeleton from "@mui/material/Skeleton";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 import {
   WiThermometer,
   WiHumidity,
@@ -13,7 +15,11 @@ import {
   WiHorizon,
 } from "react-icons/wi";
 
-const WeatherCard = ({ param, loading }) => (
+const WeatherCard = ({ param, loading }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
+  return (
   <Card
     sx={{
       boxShadow: 3,
@@ -72,7 +78,7 @@ const WeatherCard = ({ param, loading }) => (
                 color: "#666",
               }}
             >
-              Min
+              {t.weatherStation.min}
             </Typography>
             <Typography
               sx={{
@@ -92,7 +98,7 @@ const WeatherCard = ({ param, loading }) => (
                 color: "#666",
               }}
             >
-              Avg
+              {t.weatherStation.avg}
             </Typography>
             <Typography
               sx={{
@@ -112,7 +118,7 @@ const WeatherCard = ({ param, loading }) => (
                 color: "#666",
               }}
             >
-              Max
+              {t.weatherStation.max}
             </Typography>
             <Typography
               sx={{
@@ -128,12 +134,16 @@ const WeatherCard = ({ param, loading }) => (
       </>
     )}
   </Card>
-);
+  );
+};
 
 const WeatherCards = ({ loading }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   const parameters = [
     {
-      title: "Temperature",
+      title: t.weatherStation.temperature,
       icon: <WiThermometer size={42} />,
       id: "temperature",
       unit: "°C",
@@ -141,7 +151,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "28.5", avg: "24.2", min: "20.1" },
     },
     {
-      title: "Humidity",
+      title: t.weatherStation.humidity,
       icon: <WiHumidity size={42} />,
       id: "humidity",
       unit: "%",
@@ -149,7 +159,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "85", avg: "65", min: "45" },
     },
     {
-      title: "Pressure",
+      title: t.weatherStation.pressure,
       icon: <WiBarometer size={42} />,
       id: "pressure",
       unit: "hPa",
@@ -157,7 +167,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "1020", avg: "1013", min: "1005" },
     },
     {
-      title: "Wind Speed",
+      title: t.weatherStation.windSpeed,
       icon: <WiStrongWind size={42} />,
       id: "wind",
       unit: "m/s",
@@ -165,7 +175,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "12.5", avg: "8.2", min: "3.1" },
     },
     {
-      title: "Rain",
+      title: t.weatherStation.rain,
       icon: <WiRain size={42} />,
       id: "rain",
       unit: "mm",
@@ -173,7 +183,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "25", avg: "12", min: "0" },
     },
     {
-      title: "GHI",
+      title: t.weatherStation.ghi,
       icon: <WiDaySunny size={42} />,
       id: "ghi",
       unit: "W/m²",
@@ -181,7 +191,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "950", avg: "580", min: "0" },
     },
     {
-      title: "DHI",
+      title: t.weatherStation.dhi,
       icon: <WiDaySunnyOvercast size={42} />,
       id: "dhi",
       unit: "W/m²",
@@ -189,7 +199,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "450", avg: "280", min: "0" },
     },
     {
-      title: "DNI",
+      title: t.weatherStation.dni,
       icon: <WiDayCloudy size={42} />,
       id: "dni",
       unit: "W/m²",
@@ -197,7 +207,7 @@ const WeatherCards = ({ loading }) => {
       values: { max: "850", avg: "520", min: "0" },
     },
     {
-      title: "GTI",
+      title: t.weatherStation.gti,
       icon: <WiHorizon size={42} />,
       id: "gti",
       unit: "W/m²",

@@ -1,4 +1,6 @@
 import { Grid, Card, Typography, Box, Tooltip, Divider } from "@mui/material";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 import {
   Info,
   BarChart,
@@ -12,6 +14,8 @@ import {
 } from "@mui/icons-material";
 
 const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const isPositiveChange = change > 0;
 
   return (
@@ -56,7 +60,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
             >
               {title}
             </Typography>
-            <Tooltip title="More information">
+            <Tooltip title={t.metrics.moreInformation}>
               <Info sx={{ fontSize: 12, color: "#999", cursor: "pointer" }} />
             </Tooltip>
           </Box>
@@ -71,7 +75,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
               mt: 0.1,
             }}
           >
-            Calculated on {date}
+            {t.metrics.calculatedOn} {date}
           </Typography>
         </Box>
       </Box>
@@ -152,7 +156,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
               lineHeight: 1.2,
             }}
           >
-            {isPositiveChange ? "more" : "less"} than 17/05/25
+            {isPositiveChange ? t.metrics.moreThan : t.metrics.lessThan} {t.metrics.than} 17/05/25
           </Typography>
         </Box>
       </Box>
@@ -179,9 +183,12 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
 };
 
 const MetricsHeader = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   const metrics = [
     {
-      title: "Daily Energy",
+      title: t.metrics.dailyEnergy,
       value: 142.85, // Daily production for 25kW in Benguerir (May)
       unit: "kWh/day",
       date: "18/05/25",
@@ -189,7 +196,7 @@ const MetricsHeader = () => {
       icon: BoltOutlined,
     },
     {
-      title: "Specific Yield",
+      title: t.metrics.specificYield,
       value: 5.71, // Daily yield for Benguerir in May
       unit: "kWh/kW",
       date: "18/05/25",
@@ -197,7 +204,7 @@ const MetricsHeader = () => {
       icon: Speed,
     },
     {
-      title: "PR",
+      title: t.metrics.pr,
       value: 0.82, // Realistic performance ratio
       unit: "",
       date: "18/05/25",
@@ -205,7 +212,7 @@ const MetricsHeader = () => {
       icon: BarChart,
     },
     {
-      title: "Battery State",
+      title: t.metrics.batteryState,
       value: 85,
       unit: "%",
       date: "18/05/25",

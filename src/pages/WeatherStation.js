@@ -1,13 +1,16 @@
 "use client";
 import { Grid, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/GloabalComponents/Navbar";
+import { useLanguage } from "../contexts/LanguageContext";
+import { translations } from "../translations";
 import CustomDateRangePicker from "../components/GloabalComponents/CustomDateRangePicker";
 import WeatherCards from "../components/WeatherStation/WeatherCards";
 import ChartSection from "../components/WeatherStation/WeatherChartSection";
 import Footer from "../components/GloabalComponents/Footer";
 
 const WeatherStation = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [startDate, setStartDate] = useState(new Date("2024-10-09"));
   const [endDate, setEndDate] = useState(new Date("2024-10-15"));
 
@@ -146,7 +149,6 @@ const WeatherStation = () => {
 
   return (
     <>
-      <Navbar />
       <Grid
         container
         sx={{
@@ -187,7 +189,7 @@ const WeatherStation = () => {
                   ml: 6,
                 }}
               >
-                WEATHER STATION
+                {t.weatherStation.title}
               </Typography>
             </Grid>
             <Grid item xs={6} display="flex" justifyContent="center">

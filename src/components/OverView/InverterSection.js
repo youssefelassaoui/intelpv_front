@@ -2,31 +2,33 @@
 
 import { useState } from "react";
 import { Box, Card, Typography, Chip, Grid } from "@mui/material";
+import { useLanguage } from "../../contexts/LanguageContext";
+import { translations } from "../../translations";
 
 // Inverter image paths and names for our plants
 const inverterData = {
   "Green & Smart..": {
-    images: ["/SUN2000-20KTL-M0.png"],
+    images: ["/SUN2000-20KTL-M0-removebg-preview.png"],
     names: ["SUN2000-20KTL-M0"],
     color: "#129990",
   },
   "Green Energy Park (Trina)": {
-    images: ["/SUN2000-100KTL-M1.png"],
+    images: ["/SUN2000-100KTL-M1-removebg-preview.png"],
     names: ["SUN2000-100KTL-M1"],
     color: "#129990",
   },
   "Hospital Universario..": {
-    images: ["/SUN2000-60KTL-M0.png", "/SUN2000L-5KTL.png"],
+    images: ["/SUN2000-60KTL-M0-removebg-preview.png", "/SUN2000L-5KTL-removebg-preview.png"],
     names: ["SUN2000-60KTL-M0", "SUN2000L-5KTL"],
     color: "#129990",
   },
   "Mohammed VI Museum": {
-    images: ["/SUN2000L-5KTL.png"],
+    images: ["/SUN2000L-5KTL-removebg-preview.png"],
     names: ["SUN2000L-5KTL"],
     color: "#129990",
   },
   "Fkih ben saleh": {
-    images: ["/SUN2000-60KTL-M0.png", "/SUN2000-20KTL-M0.png"],
+    images: ["/SUN2000-60KTL-M0-removebg-preview.png", "/SUN2000-20KTL-M0-removebg-preview.png"],
     names: ["SUN2000-60KTL-M0", "SUN2000-20KTL-M0"],
     color: "#129990",
   },
@@ -38,9 +40,12 @@ const inverterData = {
 };
 
 const InverterSection = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   // State to keep track of selected plant
   const [selectedPlant, setSelectedPlant] = useState(
-    "Green & Smart Building Park"
+    "Green & Smart.."
   );
 
   // Chip click handler
@@ -75,15 +80,33 @@ const InverterSection = () => {
               alignItems: "center",
             }}
           >
-            <img
-              src={imgSrc || "/placeholder.svg"}
-              alt={`Inverter ${names[index]}`}
-              style={{
-                maxWidth: "100%",
-                maxHeight: "180px",
-                objectFit: "contain",
+            <Box
+              sx={{
+                width: "100%",
+                height: "180px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "transparent",
               }}
-            />
+            >
+              <img
+                src={imgSrc || "/placeholder.svg"}
+                alt={`Inverter ${names[index]}`}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  width: "auto",
+                  height: "auto",
+                  objectFit: "contain",
+                  display: "block",
+                }}
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  console.error(`Failed to load image: ${imgSrc}`);
+                }}
+              />
+            </Box>
             <Typography
               sx={{
                 mt: 0.5,
@@ -126,7 +149,7 @@ const InverterSection = () => {
           mb: 1,
         }}
       >
-        Plant Inverters
+        {t.overview.plantInverters}
       </Typography>
 
       {/* Chip Selection */}

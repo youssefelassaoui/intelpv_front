@@ -1,6 +1,7 @@
 import { Box, Typography, Card, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import Navbar from "../components/GloabalComponents/Navbar";
+import { useLanguage } from "../contexts/LanguageContext";
+import { translations } from "../translations";
 import PlantCard from "../components/OverView/PlantCard";
 import ChartSection from "../components/OverView/ChartSection";
 import MapSection from "../components/OverView/MapSection";
@@ -58,7 +59,7 @@ const CardWrapper = styled(Box)(({ theme }) => ({
 const plants = [
   {
     id: 1,
-    name: "Green & Smart Building Park ()",
+    name: "Green & Smart Building Park (Brique Rouge)",
     image: "/gsbp.jpg",
     location: "Ben Guerir 43150, MO",
     capacity: "6 kW",
@@ -85,7 +86,7 @@ const plants = [
   },
   {
     id: 6,
-    name: "SESA Project",
+    name: "SESA Project (Douar)",
     image: "/douar.jpeg",
     location: "64F2+734, Ben Guerir",
     capacity: "25 KW",
@@ -115,6 +116,9 @@ const plants = [
 ];
 
 const Overview = () => {
+  const { language } = useLanguage();
+  const t = translations[language];
+  
   // Calculate summary statistics
   const totalCapacity = plants.reduce((sum, plant) => {
     return sum + Number.parseFloat(plant.capacity);
@@ -133,7 +137,6 @@ const Overview = () => {
         overflow: "hidden",
       }}
     >
-      <Navbar />
       <Grid
         container
         sx={{
@@ -183,7 +186,7 @@ const Overview = () => {
                       lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
-                    Total Capacity
+                    {t.overview.totalCapacity}
                   </Typography>
                   <Typography
                     variant="h6"
@@ -225,7 +228,7 @@ const Overview = () => {
                       lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
-                    Total Strings
+                    {t.overview.totalStrings}
                   </Typography>
                   <Typography
                     variant="h6"
@@ -269,7 +272,7 @@ const Overview = () => {
                       lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
-                    In Maintenance
+                    {t.overview.inMaintenance}
                   </Typography>
                   <Typography
                     variant="h6"
@@ -281,7 +284,7 @@ const Overview = () => {
                       lineHeight: 1.2, // Added to reduce line height
                     }}
                   >
-                    {maintenanceCount} Plants
+                    {maintenanceCount} {t.overview.plants}
                   </Typography>
                 </Box>
               </StatsCard>
