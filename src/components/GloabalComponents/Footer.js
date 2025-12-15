@@ -12,9 +12,10 @@ const Footer = () => {
       component="footer"
       sx={{
         width: "100%",
-        backgroundColor: "#3C3D37",
+        backgroundColor: "background.paper",
         padding: "0.5rem",
-        borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+        borderTop: "1px solid",
+        borderColor: "divider",
       }}
     >
       {/* Centered content */}
@@ -32,15 +33,15 @@ const Footer = () => {
           variant="body2"
           sx={{
             fontFamily: "Poppins, sans-serif",
-            color: "rgba(255, 255, 255, 0.7)",
+            color: "text.secondary",
             fontSize: "0.875rem",
             "& a": {
-              color: "#77B254",
+              color: "primary.light",
               textDecoration: "none",
               fontWeight: 500,
               "&:hover": {
                 textDecoration: "underline",
-                color: "#8bc34a",
+                color: "primary.main",
               },
             },
           }}

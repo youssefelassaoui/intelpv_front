@@ -4,7 +4,19 @@ import { useState, useEffect } from 'react';
 import { Slab } from 'react-loading-indicators';
 
 function ProtectedRoute({ children }) {
-  const { isLoaded, isSignedIn } = useAuth();
+  let isLoaded = true;
+  let isSignedIn = true;
+  
+  try {
+    const auth = useAuth();
+    isLoaded = auth.isLoaded;
+    isSignedIn = auth.isSignedIn;
+  } catch (error) {
+    console.warn('Clerk not available, allowing access:', error);
+    isLoaded = true;
+    isSignedIn = true;
+  }
+
   const [showLoader, setShowLoader] = useState(false);
 
   useEffect(() => {

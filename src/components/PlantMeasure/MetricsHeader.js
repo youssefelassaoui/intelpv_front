@@ -1,4 +1,4 @@
-import { Grid, Card, Typography, Box, Tooltip, Divider } from "@mui/material";
+import { Grid, Card, Typography, Box, Tooltip, Divider, useTheme } from "@mui/material";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translations } from "../../translations";
 import {
@@ -23,7 +23,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
       sx={{
         p: 1,
         height: "auto",
-        backgroundColor: "white",
+        backgroundColor: "background.paper",
         boxShadow: "0 2px 4px rgba(0,0,0,0.08)",
         borderRadius: 1.5,
         maxWidth: "95%",
@@ -34,7 +34,10 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <Box
           sx={{
-            backgroundColor: "rgba(46, 125, 50, 0.09)",
+            backgroundColor: (theme) =>
+              theme.palette.mode === "light"
+                ? "rgba(46, 125, 50, 0.09)"
+                : "rgba(46, 125, 50, 0.2)",
             borderRadius: "50%",
             width: 32,
             height: 32,
@@ -44,14 +47,14 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
             mr: 1,
           }}
         >
-          <Icon sx={{ color: "#2E7D32", fontSize: 18 }} />
+          <Icon sx={{ color: "primary.main", fontSize: 18 }} />
         </Box>
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Typography
               variant="subtitle2"
               sx={{
-                color: "#666",
+                color: "text.secondary",
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 500,
                 fontSize: "0.8rem",
@@ -61,13 +64,13 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
               {title}
             </Typography>
             <Tooltip title={t.metrics.moreInformation}>
-              <Info sx={{ fontSize: 12, color: "#999", cursor: "pointer" }} />
+              <Info sx={{ fontSize: 12, color: "text.secondary", cursor: "pointer" }} />
             </Tooltip>
           </Box>
           <Typography
             variant="caption"
             sx={{
-              color: "#999",
+              color: "text.secondary",
               fontFamily: "'Poppins', sans-serif",
               fontSize: "0.65rem",
               lineHeight: 1.2,
@@ -90,6 +93,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
             fontWeight: 600,
             fontSize: "1.6rem",
             lineHeight: 1.2,
+            color: "text.primary",
           }}
         >
           {typeof value === "number"
@@ -103,7 +107,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
             sx={{
               ml: 0.5,
               fontSize: "0.8rem",
-              color: "#666",
+              color: "text.secondary",
               fontFamily: "'Poppins', sans-serif",
             }}
           >
@@ -116,9 +120,14 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
             sx={{
               display: "flex",
               alignItems: "center",
-              backgroundColor: isPositiveChange
-                ? "rgba(76, 175, 80, 0.1)"
-                : "rgba(244, 67, 54, 0.1)",
+              backgroundColor: (theme) =>
+                isPositiveChange
+                  ? theme.palette.mode === "light"
+                    ? "rgba(76, 175, 80, 0.1)"
+                    : "rgba(76, 175, 80, 0.2)"
+                  : theme.palette.mode === "light"
+                    ? "rgba(244, 67, 54, 0.1)"
+                    : "rgba(244, 67, 54, 0.2)",
               borderRadius: "4px",
               px: 0.5,
               py: 0.2,
@@ -184,6 +193,7 @@ const MetricCard = ({ title, value, unit, date, change, icon: Icon }) => {
 
 const MetricsHeader = () => {
   const { language } = useLanguage();
+  const theme = useTheme();
   const t = translations[language];
   
   const metrics = [
@@ -222,7 +232,7 @@ const MetricsHeader = () => {
   ];
 
   return (
-    <Box sx={{ py: 1.5, px: 3, backgroundColor: "#f5f5f5" }}>
+    <Box sx={{ py: 1.5, px: 3, backgroundColor: theme.palette.background.default }}>
       <Grid container spacing={2}>
         {metrics.map((metric, index) => (
           <Grid item xs={12} md={3} key={index}>

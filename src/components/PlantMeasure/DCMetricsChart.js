@@ -1,150 +1,108 @@
 "use client"
 import ReactApexChart from "react-apexcharts"
+import { useTheme, Skeleton } from "@mui/material"
 
-const DCMetricsChart = () => {
-  // Generate 7 days of data with hourly intervals for DC metrics
-  const generateWeekData = () => {
-    const data = []
-    const startDate = new Date(2025, 4, 12) // May 12, 2025
-    const totalDays = 7
+const DCMetricsChart = ({ powerMeasures = [], loadingMeasures = false }) => {
+  const theme = useTheme()
 
-    // Weather patterns for each day (0-1 scale, where 1 is perfect sunny day)
-    const weatherPatterns = [
-      0.95, // Day 1: Mostly sunny
-      0.85, // Day 2: Partly cloudy
-      0.65, // Day 3: Cloudy with some sun
-      0.9, // Day 4: Sunny
-      0.75, // Day 5: Partly cloudy
-      0.4, // Day 6: Mostly cloudy
-      0.8, // Day 7: Mostly sunny
-    ]
-
-    // System specs for a realistic 25kW solar plant
-    // For a commercial 25kW system:
-    // - Typical DC voltage: 600-800V (can go up to 1000V)
-    // - Typical DC current: ~30-40A at peak for the whole system
-    const nominalDcVoltage = 750 // Nominal DC voltage
-    const maxDcCurrent = 35 // Maximum DC current at peak
-
-    for (let day = 0; day < totalDays; day++) {
-      const currentDate = new Date(startDate)
-      currentDate.setDate(startDate.getDate() + day)
-      const weatherFactor = weatherPatterns[day]
-
-      // Generate data points for each hour of the day
-      for (let hour = 0; hour < 24; hour++) {
-        const date = new Date(currentDate)
-        date.setHours(hour, 0, 0, 0)
-
-        const timeOfDay = hour
-        let dcVoltage, dcCurrent
-
-        // Generate realistic values based on time of day
-        if (timeOfDay >= 6 && timeOfDay <= 19) {
-          // Daytime generation (6 AM to 7 PM)
-          const peakHour = 13 // Peak at 1 PM
-          const hourDiff = Math.abs(timeOfDay - peakHour)
-
-          // Bell curve for solar generation
-          const bellCurve = Math.exp(-Math.pow(hourDiff, 2) / 8)
-
-          // Apply weather factor and small random variations
-          const generationFactor = bellCurve * weatherFactor * (0.97 + Math.random() * 0.06)
-
-          // DC voltage behavior in a real system:
-          // - Morning: Voltage rises as panels warm up and sun intensity increases
-          // - Midday: Voltage stabilizes but may drop slightly due to panel temperature
-          // - Evening: Voltage gradually decreases as sun intensity decreases
-
-          // Temperature effect: voltage decreases as temperature increases
-          const tempEffect = timeOfDay >= 10 && timeOfDay <= 15 ? 0.05 * Math.random() : 0
-
-          // Voltage calculation with realistic behavior
-          if (timeOfDay < 8) {
-            // Morning ramp-up (steeper)
-            const morningFactor = ((timeOfDay - 6) / 2) * generationFactor
-            dcVoltage = nominalDcVoltage * (0.6 + 0.4 * morningFactor)
-          } else if (timeOfDay > 17) {
-            // Evening ramp-down (steeper)
-            const eveningFactor = ((19 - timeOfDay) / 2) * generationFactor
-            dcVoltage = nominalDcVoltage * (0.6 + 0.4 * eveningFactor)
-          } else {
-            // Midday plateau with slight temperature-induced dip
-            dcVoltage = nominalDcVoltage * (0.95 + 0.05 * generationFactor - tempEffect)
-          }
-
-          // DC current follows solar irradiance more directly
-          dcCurrent = maxDcCurrent * generationFactor
-
-          // Add some cloud passing effects (occasional dips)
-          if (Math.random() < 0.1 && weatherFactor < 0.9) {
-            const cloudSeverity = 0.3 + Math.random() * 0.5 // 30-80% reduction
-            // Current drops more significantly during cloud cover
-            dcCurrent *= cloudSeverity
-            // Voltage drops less during cloud cover
-            dcVoltage *= 0.9 + 0.1 * cloudSeverity
-          }
-
-          // Add small noise to make it look more realistic
-          dcVoltage += (Math.random() * 2 - 1) * 5 // +/- 5V noise
-          dcCurrent += (Math.random() * 2 - 1) * 0.5 // +/- 0.5A noise
-        } else {
-          // Night time (7 PM to 6 AM)
-          dcVoltage = 0 // No voltage at night
-          dcCurrent = 0 // No current at night
-        }
-
-        // Add small variations for consecutive readings
-        if (data.length > 0 && data[data.length - 1].date.getDate() === date.getDate()) {
-          const lastVoltage = data[data.length - 1].dcVoltage
-          const lastCurrent = data[data.length - 1].dcCurrent
-
-          // Limit how much values can change in an hour (smoother curves)
-          const maxVoltageChange = 50 // Maximum 50V change in an hour
-          const maxCurrentChange = 5 // Maximum 5A change in an hour
-
-          if (Math.abs(dcVoltage - lastVoltage) > maxVoltageChange && dcVoltage > 0 && lastVoltage > 0) {
-            dcVoltage = lastVoltage + Math.sign(dcVoltage - lastVoltage) * maxVoltageChange * Math.random()
-          }
-
-          if (Math.abs(dcCurrent - lastCurrent) > maxCurrentChange && dcCurrent > 0 && lastCurrent > 0) {
-            dcCurrent = lastCurrent + Math.sign(dcCurrent - lastCurrent) * maxCurrentChange * Math.random()
-          }
-        }
-
-        data.push({
-          date: date,
-          dcVoltage: Number.parseFloat(Math.max(0, dcVoltage).toFixed(1)),
-          dcCurrent: Number.parseFloat(Math.max(0, dcCurrent).toFixed(1)),
-        })
+  const processPowerData = (measures) => {
+    if (!Array.isArray(measures) || measures.length === 0) {
+      console.log("No power measures data or empty array");
+      return [];
+    }
+    
+    console.log("Processing power measures data:", measures.slice(0, 3));
+    
+    const processed = measures.map(item => {
+      let timestamp;
+      let value;
+      
+      if (item.datetime) {
+        timestamp = new Date(item.datetime).getTime();
+      } else if (item.timestamp) {
+        timestamp = new Date(item.timestamp).getTime();
+      } else if (item.date) {
+        timestamp = new Date(item.date).getTime();
+      } else if (item.time) {
+        timestamp = new Date(item.time).getTime();
+      } else if (item.timeStamp) {
+        timestamp = new Date(item.timeStamp).getTime();
+      } else {
+        console.warn("No timestamp found in item:", item);
+        return null;
       }
+      
+      if (item.measure !== undefined && item.measure !== null) {
+        value = Number(item.measure);
+      } else if (item.value !== undefined && item.value !== null) {
+        value = Number(item.value);
+      } else if (item.measureValue !== undefined && item.measureValue !== null) {
+        value = Number(item.measureValue);
+      } else if (item.data !== undefined && item.data !== null) {
+        value = Number(item.data);
+      } else {
+        console.warn("No value found in item:", item);
+        return null;
+      }
+      
+      return {
+        x: timestamp,
+        y: isNaN(value) ? 0 : value
+      };
+    }).filter(item => item !== null).sort((a, b) => a.x - b.x);
+    
+    console.log("Processed power data sample:", processed.slice(0, 3));
+    
+    const aggregated = aggregateBy10Minutes(processed);
+    console.log("Aggregated power data sample:", aggregated.slice(0, 3));
+    
+    return aggregated;
+  };
+
+  const aggregateBy10Minutes = (data) => {
+    if (data.length === 0) return [];
+    
+    const aggregated = [];
+    const intervalMs = 10 * 60 * 1000;
+    
+    let currentInterval = null;
+    let intervalValues = [];
+    
+    data.forEach(point => {
+      const intervalStart = Math.floor(point.x / intervalMs) * intervalMs;
+      
+      if (currentInterval === null || currentInterval !== intervalStart) {
+        if (currentInterval !== null && intervalValues.length > 0) {
+          const avgValue = intervalValues.reduce((sum, v) => sum + v, 0) / intervalValues.length;
+          aggregated.push({
+            x: currentInterval,
+            y: avgValue
+          });
+        }
+        currentInterval = intervalStart;
+        intervalValues = [point.y];
+      } else {
+        intervalValues.push(point.y);
+      }
+    });
+    
+    if (currentInterval !== null && intervalValues.length > 0) {
+      const avgValue = intervalValues.reduce((sum, v) => sum + v, 0) / intervalValues.length;
+      aggregated.push({
+        x: currentInterval,
+        y: avgValue
+      });
     }
+    
+    return aggregated;
+  };
 
-    return data
-  }
-
-  const weekData = generateWeekData()
-
-  // Generate dates for x-axis ticks (one for each day)
-  const generateDailyTicks = () => {
-    const ticks = []
-    const startDate = new Date(2025, 4, 12) // May 12, 2025
-
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate)
-      date.setDate(startDate.getDate() + i)
-      ticks.push(date.getTime())
-    }
-
-    return ticks
-  }
-
-  const dailyTicks = generateDailyTicks()
+  const powerData = processPowerData(powerMeasures)
 
   const chartOptions = {
     chart: {
-      type: "line",
-      height: 250,
+      type: "area",
+      height: 220,
       toolbar: { show: false },
       fontFamily: "Poppins, sans-serif",
       animations: {
@@ -155,16 +113,23 @@ const DCMetricsChart = () => {
       curve: "smooth",
       width: 2,
     },
+    fill: {
+      type: "gradient",
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.7,
+        opacityTo: 0.2,
+        stops: [0, 90, 100],
+      },
+    },
     dataLabels: { enabled: false },
     xaxis: {
       type: "datetime",
-      categories: dailyTicks,
-      tickAmount: 7,
-      tickPlacement: "on",
       labels: {
         style: {
           fontSize: "11px",
           fontFamily: "Poppins, sans-serif",
+          colors: theme.palette.text.secondary,
         },
         datetimeFormatter: {
           year: "yyyy",
@@ -172,11 +137,11 @@ const DCMetricsChart = () => {
           day: "dd/MM",
           hour: "HH:mm",
         },
-        format: "dd/MM",
+        format: "dd/MM HH:mm",
       },
       axisBorder: {
         show: true,
-        color: "#78909C",
+        color: theme.palette.divider,
         height: 1,
         width: "100%",
         offsetX: 0,
@@ -185,90 +150,49 @@ const DCMetricsChart = () => {
       axisTicks: {
         show: true,
         borderType: "solid",
-        color: "#C5172E",
+        color: theme.palette.divider,
         height: 6,
         offsetX: 0,
         offsetY: 0,
       },
     },
-    yaxis: [
-      {
-        title: {
-          text: "Voltage (V)",
-          style: {
-            fontSize: "12px",
-            fontFamily: "Poppins, sans-serif",
-            color: "#C5172E",
-          },
-        },
-        min: 0,
-        max: 800,
-        tickAmount: 5,
-        labels: {
-          formatter: (value) => value.toFixed(0), // Format to whole numbers for voltage
-          style: {
-            fontSize: "11px",
-            fontFamily: "Poppins, sans-serif",
-            colors: "#C5172E",
-          },
-        },
-        axisBorder: {
-          show: true,
-          color: "#78909C",
-          width: 1,
-          offsetX: 0,
-          offsetY: 0,
-        },
-        axisTicks: {
-          show: true,
-          borderType: "solid",
-          color: "#78909C",
-          width: 6,
-          offsetX: 0,
-          offsetY: 0,
+    yaxis: {
+      title: {
+        text: "Power (kW)",
+        style: {
+          fontSize: "12px",
+          fontFamily: "Poppins, sans-serif",
+          color: theme.palette.text.primary,
         },
       },
-      {
-        title: {
-          text: "Current (A)",
-          style: {
-            fontSize: "12px",
-            fontFamily: "Poppins, sans-serif",
-            color: "#FCF259",
-          },
-        },
-        min: 0,
-        max: 40,
-        tickAmount: 5,
-        opposite: true,
-        labels: {
-          formatter: (value) => value.toFixed(1), // Format to 1 decimal place for current
-          style: {
-            fontSize: "11px",
-            fontFamily: "Poppins, sans-serif",
-            colors: "#FCF259",
-          },
-        },
-        axisBorder: {
-          show: true,
-          color: "#78909C",
-          width: 1,
-          offsetX: 0,
-          offsetY: 0,
-        },
-        axisTicks: {
-          show: true,
-          borderType: "solid",
-          color: "#78909C",
-          width: 6,
-          offsetX: 0,
-          offsetY: 0,
+      min: 0,
+      labels: {
+        formatter: (value) => value.toFixed(2),
+        style: {
+          fontSize: "11px",
+          fontFamily: "Poppins, sans-serif",
+          colors: theme.palette.text.secondary,
         },
       },
-    ],
+      axisBorder: {
+        show: true,
+        color: theme.palette.divider,
+        width: 1,
+        offsetX: 0,
+        offsetY: 0,
+      },
+      axisTicks: {
+        show: true,
+        borderType: "solid",
+        color: theme.palette.divider,
+        width: 6,
+        offsetX: 0,
+        offsetY: 0,
+      },
+    },
     grid: {
       show: true,
-      borderColor: "#78909C",
+      borderColor: theme.palette.divider,
       strokeDashArray: 0,
       position: "back",
       xaxis: {
@@ -290,56 +214,32 @@ const DCMetricsChart = () => {
     },
     tooltip: {
       shared: true,
+      theme: theme.palette.mode,
       x: {
         format: "dd/MM HH:mm",
       },
-      y: [
-        {
-          formatter: (value) => `${value.toFixed(1)} V`,
-        },
-        {
-          formatter: (value) => `${value.toFixed(1)} A`,
-        },
-      ],
-    },
-    colors: ["#C5172E", "#FCF259"],
-    title: {
-      text: "DC Metrics",
-      align: "left",
-      style: {
-        fontSize: "14px",
-        fontFamily: "Poppins, sans-serif",
+      y: {
+        formatter: (value) => `${value.toFixed(2)} kW`,
       },
     },
+    colors: ["#4CAF50"],
     legend: {
-      position: "bottom",
-      horizontalAlign: "center",
-      fontFamily: "Poppins, sans-serif",
-      fontSize: "11px",
-      offsetY: 5,
+      show: false,
     },
   }
 
   const chartSeries = [
     {
-      name: "DC Voltage",
-      type: "line",
-      data: weekData.map((item) => ({
-        x: item.date.getTime(),
-        y: item.dcVoltage,
-      })),
-    },
-    {
-      name: "DC Current",
-      type: "line",
-      data: weekData.map((item) => ({
-        x: item.date.getTime(),
-        y: item.dcCurrent,
-      })),
+      name: "Power",
+      data: powerData.length > 0 ? powerData : [],
     },
   ]
 
-  return <ReactApexChart options={chartOptions} series={chartSeries} type="line" height="250" />
+  if (loadingMeasures) {
+    return <Skeleton variant="rectangular" height={220} sx={{ borderRadius: 1 }} />
+  }
+
+  return <ReactApexChart options={chartOptions} series={chartSeries} type="area" height="220" />
 }
 
 export default DCMetricsChart

@@ -152,7 +152,7 @@ const WeatherStation = () => {
       <Grid
         container
         sx={{
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "background.default",
           minHeight: "100vh",
           padding: 3,
           overflow: "hidden",
@@ -184,7 +184,7 @@ const WeatherStation = () => {
                 sx={{
                   fontSize: "16px",
                   fontFamily: "Poppins, sans-serif",
-                  color: "#333",
+                  color: "text.primary",
                   fontWeight: 500,
                   ml: 6,
                 }}

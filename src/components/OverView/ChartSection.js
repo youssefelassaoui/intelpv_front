@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { Box, Card, Typography } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
+import { Box, Card, CardContent, Typography, useTheme, Chip, Divider, IconButton, Tooltip, Skeleton } from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translations } from "../../translations";
 import ReactApexChart from "react-apexcharts";
 import CustomDateRangePicker from "../GloabalComponents/CustomDateRangePicker";
 import ProductionComparison from "./ProductionComparison";
+import { fetchDailyEnergyByPlant } from "../../services/api";
+import { format } from "date-fns";
 
-// Updated vibrant colors for better distinction
 const COLORS = [
-  "#48A6A7",
+  "#2E7D32",
   "#6EC3C4",
-  "#7BD8C6",
-  "#B7ECEC",
+  "#1976D2",
+  "#F57C00",
   "#63AEE2",
   "#5C8FA6",
 ];
@@ -47,89 +49,280 @@ const generateRealisticData = (baseCapacity, days) => {
   });
 };
 
-// Generate date labels for May 12-18
-const generateDateLabels = () => {
-  const dates = [];
-  const startDate = new Date(2025, 4, 12); // May 12, 2025 (months are 0-indexed)
-
-  for (let i = 0; i < 7; i++) {
-    const date = new Date(startDate);
-    date.setDate(startDate.getDate() + i);
-    dates.push(
-      date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit" })
-    );
-  }
-
-  return dates;
-};
-
-const dateLabels = generateDateLabels();
-
-// Plant data with realistic production values
-const plants = [
+const allPlants = [
   {
     id: 1,
-    name: "Green & Smart..",
+    name: "Green & Smart Building Park (Brique Rouge)",
+    plantId: 49951765,
     capacity: "6 kW",
-    dailyProduction: generateRealisticData("6 kW", dateLabels),
-    totalProduction: 0, // Will be calculated
+    color: "#2E7D32",
+    totalProduction: 0,
   },
   {
     id: 2,
     name: "Green Energy Park (Trina)",
     capacity: "22.23 kW",
-    dailyProduction: generateRealisticData("22.23 kW", dateLabels),
+    color: "#6EC3C4",
     totalProduction: 0,
   },
   {
     id: 3,
-    name: "Hospital Universario..",
+    name: "Hospital Universario Rien Sofía",
+    plantId: 36076361,
     capacity: "1.72 MW",
-    dailyProduction: generateRealisticData("1.72 MW", dateLabels),
+    color: "#1976D2",
     totalProduction: 0,
   },
   {
     id: 4,
-    name: "Mohammed VI Museum",
+    name: "Mohammed VI Museum of Modern and Contemporary Art",
+    plantId: 33783322,
     capacity: "136 KW",
-    dailyProduction: generateRealisticData("136 KW", dateLabels),
+    color: "#F57C00",
     totalProduction: 0,
   },
   {
     id: 5,
     name: "Fkih ben saleh",
     capacity: "400 KW",
-    dailyProduction: generateRealisticData("400 KW", dateLabels),
+    color: "#63AEE2",
     totalProduction: 0,
   },
   {
     id: 6,
     name: "SESA Project",
     capacity: "25 KW",
-    dailyProduction: generateRealisticData("25 KW", dateLabels),
+    color: "#5C8FA6",
     totalProduction: 0,
   },
 ];
 
-// Calculate total production for each plant
+const plants = allPlants;
+
+const plantsWithIds = allPlants.filter((plant) => plant.plantId);
+
+// Placeholder total production (could be computed from API later)
 plants.forEach((plant) => {
-  plant.totalProduction = plant.dailyProduction.reduce(
-    (sum, daily) => sum + daily,
-    0
-  );
+  plant.totalProduction = 0;
 });
 
 const ChartSection = () => {
   const { language } = useLanguage();
+  const theme = useTheme();
   const t = translations[language];
-  const [barStartDate, setBarStartDate] = useState(new Date(2025, 4, 12));
-  const [barEndDate, setBarEndDate] = useState(new Date(2025, 4, 18));
-  const [donutStartDate, setDonutStartDate] = useState(new Date(2025, 4, 12));
-  const [donutEndDate, setDonutEndDate] = useState(new Date(2025, 4, 18));
 
-  // Extract data from our plants array
-  const donutChartSeries = plants.map((plant) => plant.totalProduction);
-  const plantNames = plants.map((plant) => plant.name);
+  const defaultStart = new Date("2025-08-01T00:00:00Z");
+  const defaultEnd = new Date("2025-08-18T23:59:59Z");
+
+  const [barStartDate, setBarStartDate] = useState(defaultStart);
+  const [barEndDate, setBarEndDate] = useState(defaultEnd);
+  const [donutStartDate, setDonutStartDate] = useState(defaultStart);
+  const [donutEndDate, setDonutEndDate] = useState(defaultEnd);
+  const [dailyEnergyData, setDailyEnergyData] = useState(null);
+  const [donutEnergyData, setDonutEnergyData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [donutLoading, setDonutLoading] = useState(true);
+  const [comparisonLoading, setComparisonLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [donutError, setDonutError] = useState(null);
+  const [activeFilter, setActiveFilter] = useState(null);
+
+  useEffect(() => {
+    const loadDailyEnergyForAllPlants = async () => {
+      if (!barStartDate || !barEndDate) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const data = await fetchDailyEnergyByPlant(barStartDate, barEndDate);
+        setDailyEnergyData(data);
+        setComparisonLoading(false);
+      } catch (err) {
+        setError(err.message);
+        console.error("Failed to fetch daily energy by plant:", err);
+        setComparisonLoading(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDailyEnergyForAllPlants();
+  }, [barStartDate?.getTime(), barEndDate?.getTime()]);
+
+  useEffect(() => {
+    const loadDonutEnergy = async () => {
+      if (!donutStartDate || !donutEndDate) return;
+      setDonutLoading(true);
+      setDonutError(null);
+      try {
+        const data = await fetchDailyEnergyByPlant(donutStartDate, donutEndDate);
+        setDonutEnergyData(data);
+      } catch (err) {
+        setDonutError(err.message);
+      } finally {
+        setDonutLoading(false);
+      }
+    };
+    loadDonutEnergy();
+  }, [donutStartDate?.getTime(), donutEndDate?.getTime()]);
+
+  const generateDateLabelsFromRange = (start, end) => {
+    if (!start || !end) return [];
+
+    const dates = [];
+    const currentDate = new Date(start);
+    currentDate.setUTCHours(0, 0, 0, 0);
+    const endDate = new Date(end);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    while (currentDate <= endDate) {
+      dates.push(
+        currentDate.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+        })
+      );
+      const nextDate = new Date(currentDate);
+      nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+      currentDate.setTime(nextDate.getTime());
+    }
+
+    return dates;
+  };
+
+  const barChartDateLabels = useMemo(() => {
+    return generateDateLabelsFromRange(barStartDate, barEndDate);
+  }, [barStartDate?.getTime(), barEndDate?.getTime()]);
+
+  const processDailyEnergyData = (apiData) => {
+    if (!apiData || !Array.isArray(apiData)) {
+      console.log("No API data or not an array:", apiData);
+      return null;
+    }
+
+    console.log("Processing API data, items count:", apiData.length);
+    const plantDataMap = {};
+    
+    apiData.forEach(item => {
+      const plantId = item.plantId;
+      if (!plantDataMap[plantId]) {
+        plantDataMap[plantId] = new Map();
+      }
+      
+      const energyValue = item.totalDayEnergy !== undefined 
+        ? item.totalDayEnergy 
+        : item.energy !== undefined 
+        ? item.energy 
+        : item.value !== undefined 
+        ? item.value 
+        : item.dailyEnergy !== undefined
+        ? item.dailyEnergy
+        : 0;
+      
+      const dateValue = item.date || item.timestamp || item.day;
+      if (dateValue) {
+        const dateKey = dateValue.split('T')[0];
+        plantDataMap[plantId].set(dateKey, energyValue);
+        console.log(`Plant ${plantId}, Date: ${dateKey}, Energy: ${energyValue}`);
+      }
+    });
+    
+    console.log("Plant data map sample (36076361):", Array.from(plantDataMap[36076361]?.entries() || []));
+
+    const series = plantsWithIds.map((plant, plantIndex) => {
+      if (!plant.plantId || !plantDataMap[plant.plantId]) {
+        return {
+          name: plant.name,
+          data: plant.dailyProduction,
+          color: plant.color || COLORS[plantIndex % COLORS.length],
+        };
+      }
+
+      const dateMap = plantDataMap[plant.plantId];
+      
+      const processedData = [];
+      const currentDate = new Date(barStartDate);
+      currentDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(barEndDate);
+      endDate.setHours(23, 59, 59, 999);
+
+      while (currentDate <= endDate) {
+        const dateKey = currentDate.toISOString().split("T")[0];
+        const value = dateMap.get(dateKey) || 0;
+        processedData.push(value);
+
+        const nextDate = new Date(currentDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        currentDate.setTime(nextDate.getTime());
+      }
+
+      return {
+        name: plant.name,
+        data: processedData,
+        color: plant.color || COLORS[plantIndex % COLORS.length],
+      };
+    });
+
+    return { series, labels: barChartDateLabels };
+  };
+
+  const safeCategories = Array.isArray(barChartDateLabels)
+    ? barChartDateLabels
+    : [];
+
+  const processedData = dailyEnergyData 
+    ? processDailyEnergyData(dailyEnergyData) 
+    : null;
+
+  const categoriesFromData =
+    processedData?.labels && Array.isArray(processedData.labels) && processedData.labels.length
+      ? processedData.labels
+      : null;
+
+  const baseCategories = categoriesFromData || safeCategories;
+  const fallbackCategories =
+    baseCategories && baseCategories.length > 0 ? baseCategories : [" "];
+
+  const buildEmptySeries = () =>
+    plantsWithIds.map((plant, index) => ({
+      name: plant.name,
+      data: fallbackCategories.map(() => 0),
+      color: plant.color || COLORS[index % COLORS.length],
+    }));
+
+  const normalizedSeries = (processedData?.series || []).map((s, idx) => ({
+    name: s?.name ?? plantsWithIds[idx]?.name ?? `Plant ${idx + 1}`,
+    data: Array.isArray(s?.data)
+      ? s.data
+      : fallbackCategories.map(() => 0),
+    color: s?.color || plantsWithIds[idx]?.color || COLORS[idx % COLORS.length],
+  }));
+
+  const barChartSeries = normalizedSeries.length ? normalizedSeries : buildEmptySeries();
+
+  const barChartCategories = fallbackCategories;
+
+  const aggregateDonutData = (apiData) => {
+    if (!apiData || !Array.isArray(apiData)) return plantsWithIds.map(() => 0);
+
+    const totalsMap = new Map();
+    apiData.forEach((item) => {
+      const pid = item.plantId;
+      const val =
+        item.totalDayEnergy ??
+        item.energy ??
+        item.value ??
+        item.dailyEnergy ??
+        0;
+      totalsMap.set(pid, (totalsMap.get(pid) || 0) + Number(val || 0));
+    });
+
+    return plantsWithIds.map((p) => totalsMap.get(p.plantId) || 0);
+  };
+
+  const donutChartSeries = aggregateDonutData(donutEnergyData);
+  const plantNames = plantsWithIds.map((plant) => plant.name);
 
   const barChartOptions = {
     chart: {
@@ -157,38 +350,52 @@ const ChartSection = () => {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: dateLabels,
+      categories: barChartCategories,
       axisBorder: {
         show: true,
+        color: theme.palette.divider,
       },
       axisTicks: {
         show: true,
+        color: theme.palette.divider,
       },
       labels: {
+        show: true,
         style: {
           fontSize: "10px",
+          colors: theme.palette.text.secondary,
+          fontFamily: "Poppins, sans-serif",
         },
       },
     },
     yaxis: {
+      show: true,
       title: {
+        show: true,
         text: "Energy (kWh)",
         style: {
           fontFamily: "Poppins, sans-serif",
           fontSize: "11px",
+          color: theme.palette.text.primary,
         },
+        offsetX: -10,
       },
       labels: {
+        show: true,
         formatter: (value) => value.toFixed(0),
         style: {
           fontSize: "10px",
+          colors: theme.palette.text.secondary,
+          fontFamily: "Poppins, sans-serif",
         },
       },
       axisBorder: {
         show: true,
+        color: theme.palette.divider,
       },
       axisTicks: {
         show: true,
+        color: theme.palette.divider,
       },
     },
     fill: {
@@ -204,6 +411,9 @@ const ChartSection = () => {
       horizontalAlign: "center",
       fontFamily: "Poppins, sans-serif",
       fontSize: "11px",
+      labels: {
+        colors: theme.palette.text.primary,
+      },
       itemMargin: {
         horizontal: 5,
         vertical: 0,
@@ -217,7 +427,7 @@ const ChartSection = () => {
     },
     grid: {
       show: true,
-      borderColor: "#f1f1f1",
+      borderColor: theme.palette.divider,
       xaxis: {
         lines: {
           show: false,
@@ -232,17 +442,17 @@ const ChartSection = () => {
         top: 0,
         right: 0,
         bottom: 0,
-        left: 5,
+        left: 20,
       },
     },
-    colors: COLORS,
+    tooltip: {
+      theme: theme.palette.mode,
+      style: {
+        fontFamily: "Poppins, sans-serif",
+      },
+    },
+    colors: plantsWithIds.map((plant, index) => plant.color || COLORS[index % COLORS.length]),
   };
-
-  // Create series from our plant data
-  const barChartSeries = plants.map((plant) => ({
-    name: plant.name,
-    data: plant.dailyProduction,
-  }));
 
   // Calculate total for percentage calculation
   const totalEnergy = donutChartSeries.reduce((a, b) => a + b, 0);
@@ -252,6 +462,14 @@ const ChartSection = () => {
       type: "donut",
       fontFamily: "Poppins, sans-serif",
       height: 230,
+      toolbar: {
+        show: false,
+      },
+      events: {
+        legendClick: function(chartContext, seriesIndex, opts) {
+          return true;
+        },
+      },
     },
     labels: plantNames,
     plotOptions: {
@@ -263,11 +481,25 @@ const ChartSection = () => {
             total: {
               show: true,
               label: t.charts.totalEnergy,
-              fontSize: "12px",
-              formatter: (w) =>
-                w.globals.seriesTotals
-                  .reduce((a, b) => a + b, 0)
-                  .toLocaleString() + " kWh",
+              fontSize: "10px",
+              fontWeight: 500,
+              fontFamily: "Poppins, sans-serif",
+              color: theme.palette.text.secondary,
+              formatter: (w) => {
+                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                return total.toLocaleString() + " kWh";
+              },
+            },
+            value: {
+              show: true,
+              fontSize: "20px",
+              fontWeight: 700,
+              fontFamily: "Poppins, sans-serif",
+              color: theme.palette.text.primary,
+              offsetY: -10,
+              formatter: (val) => {
+                return val.toLocaleString();
+              },
             },
           },
         },
@@ -281,6 +513,9 @@ const ChartSection = () => {
       horizontalAlign: "center",
       fontFamily: "Poppins, sans-serif",
       fontSize: "10px",
+      labels: {
+        colors: theme.palette.text.primary,
+      },
       itemMargin: {
         horizontal: 4,
         vertical: 0,
@@ -293,6 +528,10 @@ const ChartSection = () => {
       },
     },
     tooltip: {
+      theme: theme.palette.mode,
+      style: {
+        fontFamily: "Poppins, sans-serif",
+      },
       y: {
         formatter: (val, { seriesIndex }) => {
           const percentage = ((val / totalEnergy) * 100).toFixed(1);
@@ -300,13 +539,30 @@ const ChartSection = () => {
         },
       },
     },
-    colors: COLORS,
+    colors: plantsWithIds.map((plant, index) => plant.color || COLORS[index % COLORS.length]),
   };
 
   const handleBarDateRangeChange = (start, end) => {
+    const startDate = new Date(start);
+    startDate.setUTCHours(0, 0, 0, 0);
+    const endDate = new Date(end);
+    endDate.setUTCHours(23, 59, 59, 999);
+
+    setBarStartDate(startDate);
+    setBarEndDate(endDate);
+    setActiveFilter(null);
+  };
+
+  const handleQuickFilter = (days, filterKey) => {
+    const today = new Date();
+    const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999));
+    const start = new Date(end);
+    start.setUTCDate(start.getUTCDate() - (days - 1));
+    start.setUTCHours(0, 0, 0, 0);
+
     setBarStartDate(start);
     setBarEndDate(end);
-    // Add logic to filter bar chart data based on date range
+    setActiveFilter(filterKey);
   };
 
   const handleDonutDateRangeChange = (start, end) => {
@@ -315,8 +571,8 @@ const ChartSection = () => {
     // Add logic to filter donut chart data based on date range
   };
 
-  // Reduced card height for more compact layout
-  const cardHeight = 320;
+  // Increased card height to prevent bottom cutoff
+  const cardHeight = 380;
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -329,97 +585,325 @@ const ChartSection = () => {
       >
         {/* Daily Production Bar Chart */}
         <Card
+          onClick={(e) => e.stopPropagation()}
           sx={{
-            p: 2,
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             height: cardHeight,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "background.paper",
+            position: "relative",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 1,
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
+          <CardContent sx={{ position: "relative", p: 2, overflow: "visible" }}>
             <Typography
               variant="h6"
+              onClick={(e) => e.stopPropagation()}
               sx={{
                 fontSize: "14px",
                 fontFamily: "Poppins, sans-serif",
                 fontWeight: 500,
+                color: "text.primary",
+                userSelect: "none",
+                mb: 1,
               }}
             >
               {t.charts.dailyEnergyProduction}
             </Typography>
-            <CustomDateRangePicker
-              startDate={barStartDate}
-              endDate={barEndDate}
-              onRangeChange={handleBarDateRangeChange}
-            />
-          </Box>
-          <Box sx={{ height: 260 }}>
-            <ReactApexChart
-              options={barChartOptions}
-              series={barChartSeries}
-              type="bar"
-              height="100%"
-              width="100%"
-            />
-          </Box>
+            <Box sx={{ 
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexWrap: "wrap",
+              mb: 0.5,
+              justifyContent: "space-between"
+            }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                <Tooltip title={t.common?.selectTimeRange || "Select range of time"} arrow placement="top">
+                  <Box>
+                    <CustomDateRangePicker
+                      startDate={barStartDate}
+                      endDate={barEndDate}
+                      onRangeChange={handleBarDateRangeChange}
+                    />
+                  </Box>
+                </Tooltip>
+                <Tooltip title="Select period" arrow placement="top">
+                  <Chip
+                    label="5 jrs"
+                    onClick={() => handleQuickFilter(5, "5jrs")}
+                    size="small"
+                    sx={{
+                      height: "24px",
+                      fontSize: "10px",
+                      fontFamily: "Poppins, sans-serif",
+                      backgroundColor: (theme) =>
+                        activeFilter === "5jrs"
+                          ? theme.palette.primary.main
+                          : theme.palette.mode === "light"
+                          ? "rgba(0,0,0,0.05)"
+                          : "rgba(255,255,255,0.1)",
+                      color: (theme) =>
+                        activeFilter === "5jrs" ? "#fff" : theme.palette.text.primary,
+                      border: (theme) =>
+                        activeFilter === "5jrs"
+                          ? `1px solid ${theme.palette.primary.main}`
+                          : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor: (theme) =>
+                          activeFilter === "5jrs"
+                            ? theme.palette.primary.dark
+                            : theme.palette.mode === "light"
+                            ? "rgba(0,0,0,0.1)"
+                            : "rgba(255,255,255,0.15)",
+                      },
+                    }}
+                  />
+                </Tooltip>
+                <Tooltip title="Select period" arrow placement="top">
+                  <Chip
+                    label="10 jrs"
+                    onClick={() => handleQuickFilter(10, "10jrs")}
+                    size="small"
+                    sx={{
+                      height: "24px",
+                      fontSize: "10px",
+                      fontFamily: "Poppins, sans-serif",
+                      backgroundColor: (theme) =>
+                        activeFilter === "10jrs"
+                          ? theme.palette.primary.main
+                          : theme.palette.mode === "light"
+                          ? "rgba(0,0,0,0.05)"
+                          : "rgba(255,255,255,0.1)",
+                      color: (theme) =>
+                        activeFilter === "10jrs" ? "#fff" : theme.palette.text.primary,
+                      border: (theme) =>
+                        activeFilter === "10jrs"
+                          ? `1px solid ${theme.palette.primary.main}`
+                          : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor: (theme) =>
+                          activeFilter === "10jrs"
+                            ? theme.palette.primary.dark
+                            : theme.palette.mode === "light"
+                            ? "rgba(0,0,0,0.1)"
+                            : "rgba(255,255,255,0.15)",
+                      },
+                    }}
+                  />
+                </Tooltip>
+                <Tooltip title="Select period" arrow placement="top">
+                  <Chip
+                    label="15 jrs"
+                    onClick={() => handleQuickFilter(15, "15jrs")}
+                    size="small"
+                    sx={{
+                      height: "24px",
+                      fontSize: "10px",
+                      fontFamily: "Poppins, sans-serif",
+                      backgroundColor: (theme) =>
+                        activeFilter === "15jrs"
+                          ? theme.palette.primary.main
+                          : theme.palette.mode === "light"
+                          ? "rgba(0,0,0,0.05)"
+                          : "rgba(255,255,255,0.1)",
+                      color: (theme) =>
+                        activeFilter === "15jrs" ? "#fff" : theme.palette.text.primary,
+                      border: (theme) =>
+                        activeFilter === "15jrs"
+                          ? `1px solid ${theme.palette.primary.main}`
+                          : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor: (theme) =>
+                          activeFilter === "15jrs"
+                            ? theme.palette.primary.dark
+                            : theme.palette.mode === "light"
+                            ? "rgba(0,0,0,0.1)"
+                            : "rgba(255,255,255,0.15)",
+                      },
+                    }}
+                  />
+                </Tooltip>
+                <Tooltip title="Select period" arrow placement="top">
+                  <Chip
+                    label="20 jrs"
+                    onClick={() => handleQuickFilter(20, "20jrs")}
+                    size="small"
+                    sx={{
+                      height: "24px",
+                      fontSize: "10px",
+                      fontFamily: "Poppins, sans-serif",
+                      backgroundColor: (theme) =>
+                        activeFilter === "20jrs"
+                          ? theme.palette.primary.main
+                          : theme.palette.mode === "light"
+                          ? "rgba(0,0,0,0.05)"
+                          : "rgba(255,255,255,0.1)",
+                      color: (theme) =>
+                        activeFilter === "20jrs" ? "#fff" : theme.palette.text.primary,
+                      border: (theme) =>
+                        activeFilter === "20jrs"
+                          ? `1px solid ${theme.palette.primary.main}`
+                          : "1px solid transparent",
+                      "&:hover": {
+                        backgroundColor: (theme) =>
+                          activeFilter === "20jrs"
+                            ? theme.palette.primary.dark
+                            : theme.palette.mode === "light"
+                            ? "rgba(0,0,0,0.1)"
+                            : "rgba(255,255,255,0.15)",
+                      },
+                    }}
+                  />
+                </Tooltip>
+              </Box>
+              <Tooltip title="Filters" arrow placement="top">
+                <IconButton 
+                  size="small"
+                  sx={{ 
+                    color: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "action.hover"
+                    }
+                  }}
+                >
+                  <FilterListIcon sx={{ fontSize: "20px" }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Divider sx={{ mb: 0.5 }} />
+            <Box sx={{ pt: 0.5, pb: 1 }}>
+              <Box
+                sx={{ height: 280, flex: 1 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+            {loading ? (
+              <Skeleton variant="rectangular" height={280} sx={{ borderRadius: 1 }} />
+            ) : error ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "100%",
+                }}
+              >
+                <Typography variant="body2" color="error">
+                  Error: {error}
+                </Typography>
+              </Box>
+            ) : (
+              <ReactApexChart
+                options={barChartOptions}
+                series={barChartSeries}
+                type="bar"
+                height={280}
+              />
+            )}
+              </Box>
+            </Box>
+          </CardContent>
         </Card>
 
         {/* Total Production Donut Chart */}
         <Card
+          onClick={(e) => e.stopPropagation()}
           sx={{
-            p: 2,
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             height: cardHeight,
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "background.paper",
+            position: "relative",
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              mb: 2,
-              flexDirection: "column",
-              gap: 1,
-            }}
-          >
+          <CardContent sx={{ position: "relative", p: 2, overflow: "visible" }}>
             <Typography
               variant="h6"
+              onClick={(e) => e.stopPropagation()}
               sx={{
                 fontSize: "14px",
                 fontFamily: "Poppins, sans-serif",
                 fontWeight: 500,
+                color: "text.primary",
+                userSelect: "none",
+                mb: 1,
               }}
             >
               {t.charts.energyDistribution}
             </Typography>
-            <CustomDateRangePicker
-              startDate={donutStartDate}
-              endDate={donutEndDate}
-              onRangeChange={handleDonutDateRangeChange}
-            />
-          </Box>
-          <Box sx={{ height: 230 }}>
-            <ReactApexChart
-              options={donutChartOptions}
-              series={donutChartSeries}
-              type="donut"
-              height="100%"
-              width="100%"
-            />
-          </Box>
+            <Box sx={{ 
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flexWrap: "wrap",
+              mb: 0.5,
+              justifyContent: "space-between"
+            }}>
+              <Tooltip title={t.common?.selectTimeRange || "Select range of time"} arrow placement="top">
+                <Box>
+                  <CustomDateRangePicker
+                    startDate={donutStartDate}
+                    endDate={donutEndDate}
+                    onRangeChange={(start, end) => {
+                      const s = new Date(start);
+                      s.setUTCHours(0, 0, 0, 0);
+                      const e = new Date(end);
+                      e.setUTCHours(23, 59, 59, 999);
+                      setDonutStartDate(s);
+                      setDonutEndDate(e);
+                    }}
+                  />
+                </Box>
+              </Tooltip>
+              <Tooltip title="Filters" arrow placement="top">
+                <IconButton 
+                  size="small"
+                  sx={{ 
+                    color: "primary.main",
+                    "&:hover": {
+                      backgroundColor: "action.hover"
+                    }
+                  }}
+                >
+                  <FilterListIcon sx={{ fontSize: "20px" }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+            <Divider sx={{ mb: 0.5 }} />
+            <Box sx={{ pt: 0.5, pb: 1 }}>
+              <Box sx={{ height: 250, flex: 1 }}>
+                {donutLoading ? (
+                  <Skeleton variant="rectangular" height={250} sx={{ borderRadius: 1 }} />
+                ) : donutError ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "100%",
+                    }}
+                  >
+                    <Typography variant="body2" color="error">
+                      Error: {donutError}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <ReactApexChart
+                    options={donutChartOptions}
+                    series={donutChartSeries}
+                    type="donut"
+                    height={250}
+                  />
+                )}
+              </Box>
+            </Box>
+          </CardContent>
         </Card>
 
         {/* Production Comparison - directly using the component */}
         <Box sx={{ height: cardHeight }}>
-          <ProductionComparison plants={plants} />
+          <ProductionComparison loading={comparisonLoading} />
         </Box>
       </Box>
     </Box>

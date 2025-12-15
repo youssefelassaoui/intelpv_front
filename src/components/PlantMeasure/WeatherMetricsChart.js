@@ -1,8 +1,10 @@
 "use client";
 import ReactApexChart from "react-apexcharts";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 
 const WeatherMetricsChart = () => {
+  const theme = useTheme();
+  
   // Generate 7 days of data with hourly intervals for weather metrics
   const generateWeekData = () => {
     const data = [];
@@ -193,8 +195,8 @@ const WeatherMetricsChart = () => {
   const chartOptions = {
     chart: {
       type: "area",
-      height: 350,
-      toolbar: { show: false },
+      height: 240,
+      toolbar: { show: true },
       fontFamily: "Poppins, sans-serif",
       animations: { enabled: false },
     },
@@ -218,7 +220,11 @@ const WeatherMetricsChart = () => {
       tickAmount: 7,
       tickPlacement: "on",
       labels: {
-        style: { fontSize: "11px", fontFamily: "Poppins, sans-serif" },
+        style: { 
+          fontSize: "11px", 
+          fontFamily: "Poppins, sans-serif",
+          colors: theme.palette.text.primary
+        },
         datetimeFormatter: {
           year: "yyyy",
           month: "MMM 'yy",
@@ -229,7 +235,7 @@ const WeatherMetricsChart = () => {
       },
       axisBorder: {
         show: true,
-        color: "#78909C",
+        color: theme.palette.divider,
         height: 1,
         width: "100%",
         offsetX: 0,
@@ -238,7 +244,7 @@ const WeatherMetricsChart = () => {
       axisTicks: {
         show: true,
         borderType: "solid",
-        color: "#78909C",
+        color: theme.palette.divider,
         height: 6,
         offsetX: 0,
         offsetY: 0,
@@ -267,7 +273,7 @@ const WeatherMetricsChart = () => {
         },
         axisBorder: {
           show: true,
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 1,
           offsetX: 0,
           offsetY: 0,
@@ -275,7 +281,7 @@ const WeatherMetricsChart = () => {
         axisTicks: {
           show: true,
           borderType: "solid",
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 6,
           offsetX: 0,
           offsetY: 0,
@@ -304,7 +310,7 @@ const WeatherMetricsChart = () => {
         },
         axisBorder: {
           show: true,
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 1,
           offsetX: 0,
           offsetY: 0,
@@ -312,7 +318,7 @@ const WeatherMetricsChart = () => {
         axisTicks: {
           show: true,
           borderType: "solid",
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 6,
           offsetX: 0,
           offsetY: 0,
@@ -334,7 +340,7 @@ const WeatherMetricsChart = () => {
         opposite: true,
         axisBorder: {
           show: true,
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 1,
           offsetX: 0,
           offsetY: 0,
@@ -342,7 +348,7 @@ const WeatherMetricsChart = () => {
         axisTicks: {
           show: true,
           borderType: "solid",
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 6,
           offsetX: 0,
           offsetY: 0,
@@ -373,7 +379,7 @@ const WeatherMetricsChart = () => {
         opposite: true,
         axisBorder: {
           show: true,
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 1,
           offsetX: 0,
           offsetY: 0,
@@ -381,7 +387,7 @@ const WeatherMetricsChart = () => {
         axisTicks: {
           show: true,
           borderType: "solid",
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 6,
           offsetX: 0,
           offsetY: 0,
@@ -399,7 +405,7 @@ const WeatherMetricsChart = () => {
     ],
     grid: {
       show: true,
-      borderColor: "#78909C",
+      borderColor: theme.palette.divider,
       strokeDashArray: 0,
       position: "back",
       xaxis: { lines: { show: false } },
@@ -407,6 +413,7 @@ const WeatherMetricsChart = () => {
       padding: { top: 0, right: 10, bottom: 0, left: 0 },
     },
     tooltip: {
+      theme: theme.palette.mode,
       shared: true,
       x: { format: "dd/MM HH:mm" },
       y: [
@@ -415,19 +422,20 @@ const WeatherMetricsChart = () => {
         { formatter: (value) => `${value.toFixed(1)} km/h` },
         { formatter: (value) => `${(value * 40).toFixed(0)} W/m²` },
       ],
+      style: {
+        fontFamily: "Poppins, sans-serif",
+      },
     },
     colors: ["#FF5733", "#2196F3", "#4CAF50", "#FFC107"],
-    title: {
-      text: "Weather Metrics",
-      align: "left",
-      style: { fontSize: "14px", fontFamily: "Poppins, sans-serif" },
-    },
     legend: {
       position: "bottom",
       horizontalAlign: "center",
       fontFamily: "Poppins, sans-serif",
       fontSize: "11px",
       offsetY: 5,
+      labels: {
+        colors: theme.palette.text.primary,
+      },
     },
   };
 
@@ -469,7 +477,7 @@ const WeatherMetricsChart = () => {
         options={chartOptions}
         series={chartSeries}
         type="area"
-        height="350"
+        height={240}
       />
     </Box>
   );

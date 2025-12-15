@@ -1,10 +1,11 @@
-import { Box, Typography, Card, Divider } from "@mui/material"
+import { Box, Typography, Card, Divider, useTheme, Skeleton } from "@mui/material"
 import { TrendingUp, TrendingDown, InfoOutlined } from "@mui/icons-material"
 import { useLanguage } from "../../contexts/LanguageContext"
 import { translations } from "../../translations"
 
-const ProductionComparison = () => {
+const ProductionComparison = ({ loading = false }) => {
   const { language } = useLanguage()
+  const theme = useTheme()
   const t = translations[language]
   // Get current date for the week display
   const currentDate = new Date()
@@ -19,14 +20,13 @@ const ProductionComparison = () => {
   const currentWeekStart = formatDate(lastWeekDate)
   const currentWeekEnd = formatDate(currentDate)
 
-  // Use our plant data from the previous components
   const plants = [
     {
-      name: "Green & Smart..",
+      name: "Green & Smart Building Park (Brique Rouge)",
       production: "5.8",
       change: "+0.6",
       trend: "up",
-      color: "#48A6A7",
+      color: "#2E7D32",
     },
     {
       name: "Green Energy Park (Trina)",
@@ -36,18 +36,18 @@ const ProductionComparison = () => {
       color: "#6EC3C4",
     },
     {
-      name: "Hospital Universario..",
+      name: "Hospital Universario Rien Sofía",
       production: "15.4",
       change: "+2.1",
       trend: "up",
-      color: "#7BD8C6",
+      color: "#1976D2",
     },
     {
-      name: "Mohammed VI Museum",
+      name: "Mohammed VI Museum of Modern and Contemporary Art",
       production: "11.2",
       change: "+0.9",
       trend: "up",
-      color: "#B7ECEC",
+      color: "#F57C00",
     },
     {
       name: "Fkih ben saleh",
@@ -65,14 +65,36 @@ const ProductionComparison = () => {
     },
   ]
 
+  if (loading) {
+    return (
+      <Card
+        sx={{
+          p: 1.5,
+          height: "100%",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          display: "flex",
+          flexDirection: "column",
+          backgroundColor: "background.paper",
+          pb: 2,
+        }}
+      >
+        <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1.5 }} />
+        <Skeleton variant="text" width="40%" height={16} sx={{ mb: 1 }} />
+        <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 1 }} />
+      </Card>
+    )
+  }
+
   return (
     <Card
       sx={{
-        p: 1.5, // Reduced from p: 2
+        p: 1.5,
         height: "100%",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: "background.paper",
+        pb: 2,
       }}
     >
       <Box sx={{ mb: 1.5 }}>
@@ -81,9 +103,10 @@ const ProductionComparison = () => {
         <Typography
           variant="h6"
           sx={{
-            fontSize: "14px", // Reduced from 16px
+            fontSize: "14px",
             fontFamily: "Poppins, sans-serif",
             fontWeight: 500,
+            color: "text.primary",
           }}
         >
           {t.charts.weeklyProductionComparison}
@@ -197,9 +220,9 @@ const ProductionComparison = () => {
               <Typography
                 sx={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontSize: "0.8rem", // Reduced from 0.875rem
-                  color: "#333",
-                  maxWidth: "120px", // Added to prevent overflow
+                  fontSize: "0.8rem",
+                  color: "text.primary",
+                  maxWidth: "120px",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -209,15 +232,13 @@ const ProductionComparison = () => {
               </Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-              {" "}
-              {/* Reduced from gap: 2 */}
               <Typography
                 sx={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontSize: "0.8rem", // Reduced from 0.875rem
+                  fontSize: "0.8rem",
                   fontWeight: 600,
-                  color: "#333",
-                  width: "55px", // Reduced from 60px
+                  color: "text.primary",
+                  width: "55px",
                   textAlign: "right",
                 }}
               >

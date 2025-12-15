@@ -1,81 +1,91 @@
-"use client"
+"use client";
 
-import { useState, useRef } from "react"
-import { Box, Card, Typography, Chip } from "@mui/material"
-import { MapContainer, TileLayer, Marker, Tooltip, useMap } from "react-leaflet"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
+import { useState, useRef } from "react";
+import { Box, Card, Typography, Chip, useTheme } from "@mui/material";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Tooltip,
+  useMap,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
-// Plant locations with coordinates - updated for our plants
 const plantLocations = [
   {
     id: 1,
-    name: "Green & Smart Building Park",
+    name: "Green & Smart B.P.",
+    plantId: 49951765,
     coordinates: [32.217, -7.931],
     capacity: "6 kW",
-    color: "#129990",
+    color: "#2E7D32",
   },
   {
     id: 2,
-    name: "Green Energy Park (Trina)",
+    name: "Green Energy Park",
     coordinates: [32.2207, -7.9287],
     capacity: "-- MW",
-    color: "#129990",
+    color: "#6EC3C4",
   },
   {
     id: 3,
-    name: "Hospital Universario..",
+    name: "Hospital Rien Sofía",
+    plantId: 36076361,
     coordinates: [37.872, -4.7894],
     capacity: "1.72 MW",
-    color: "#129990",
+    color: "#1976D2",
   },
   {
     id: 4,
     name: "Mohammed VI Museum",
+    plantId: 33783322,
     coordinates: [34.0136, -6.8373],
     capacity: "136 KW",
-    color: "#129990",
+    color: "#F57C00",
   },
   {
     id: 5,
     name: "Fkih ben saleh",
     coordinates: [32.5779, -6.6217],
     capacity: "400 KW",
-    color: "#129990",
+    color: "#63AEE2",
   },
   {
     id: 6,
     name: "SESA Project",
-    coordinates: [32.2230987035737, -7.899800584375511], // Marrakech
+    coordinates: [32.2230987035737, -7.899800584375511],
     capacity: "25 KW",
-    color: "#129990",
+    color: "#5C8FA6",
   },
-]
+];
 
 // Component to handle map fly to functionality
 function FlyToMarker({ coordinates }) {
-  const map = useMap()
+  const map = useMap();
   map.flyTo(coordinates, 15, {
     duration: 1.5,
-  })
-  return null
+  });
+  return null;
 }
 
 // Custom PV system icon
 const pvSystemIcon = new L.Icon({
-  iconUrl: "/PvSysIcon.svg",
+  iconUrl: "/SystemIcon.svg",
   iconSize: [28, 28], // Reduced from 32, 32
   iconAnchor: [14, 14], // Adjusted for new size
   popupAnchor: [0, -14], // Adjusted for new size
-})
+});
 
 const MapSection = () => {
-  const [activeLocation, setActiveLocation] = useState(null)
-  const mapRef = useRef(null)
+  const [activeLocation, setActiveLocation] = useState(null);
+  const mapRef = useRef(null);
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
 
   const handleChipClick = (plant) => {
-    setActiveLocation(plant)
-  }
+    setActiveLocation(plant);
+  };
 
   return (
     <Card
@@ -106,6 +116,9 @@ const MapSection = () => {
           width: 100%;
           border-radius: 4px;
         }
+        .leaflet-tooltip {
+          padding: 3px 6px !important;
+        }
       `}</style>
 
       <Box sx={{ position: "relative", flexGrow: 1 }}>
@@ -121,20 +134,31 @@ const MapSection = () => {
           ref={mapRef}
           style={{ height: "100%" }}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          {isDarkMode ? (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
+              url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+            />
+          ) : (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          )}
 
           {plantLocations.map((plant) => (
-            <Marker key={plant.id} position={plant.coordinates} icon={pvSystemIcon}>
+            <Marker
+              key={plant.id}
+              position={plant.coordinates}
+              icon={pvSystemIcon}
+            >
               <Tooltip permanent direction="top" offset={[0, -14]}>
                 <Box sx={{ textAlign: "center" }}>
                   <Box
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
-                      fontSize: "0.65rem", // Reduced from 0.75rem
+                      fontSize: "0.65rem",
                     }}
                   >
                     {plant.name}
@@ -144,7 +168,9 @@ const MapSection = () => {
             </Marker>
           ))}
 
-          {activeLocation && <FlyToMarker coordinates={activeLocation.coordinates} />}
+          {activeLocation && (
+            <FlyToMarker coordinates={activeLocation.coordinates} />
+          )}
         </MapContainer>
 
         {/* Centered chips positioned on top of the map */}
@@ -168,17 +194,36 @@ const MapSection = () => {
               label={plant.name}
               onClick={() => handleChipClick(plant)}
               sx={{
-                backgroundColor: activeLocation?.id === plant.id ? plant.color : "rgba(255, 255, 255, 0.9)",
-                color: activeLocation?.id === plant.id ? "white" : "#333",
+                backgroundColor: (theme) =>
+                  activeLocation?.id === plant.id
+                    ? plant.color
+                    : theme.palette.mode === "light"
+                    ? "rgba(255, 255, 255, 0.9)"
+                    : "rgba(30, 30, 30, 0.9)",
+                color: (theme) =>
+                  activeLocation?.id === plant.id
+                    ? "white"
+                    : theme.palette.text.primary,
                 border: `1px solid ${plant.color}`,
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 500,
-                fontSize: "0.65rem", // Reduced from 0.75rem
-                height: "24px", // Added to reduce height
-                boxShadow: "0 1px 3px rgba(0,0,0,0.2)", // Add shadow for better visibility
+                fontSize: "0.65rem",
+                height: "24px",
+                boxShadow: (theme) =>
+                  theme.palette.mode === "light"
+                    ? "0 1px 3px rgba(0,0,0,0.2)"
+                    : "0 1px 3px rgba(0,0,0,0.5)",
                 "&:hover": {
-                  backgroundColor: activeLocation?.id === plant.id ? plant.color : "rgba(255, 255, 255, 1)",
-                  boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                  backgroundColor: (theme) =>
+                    activeLocation?.id === plant.id
+                      ? plant.color
+                      : theme.palette.mode === "light"
+                      ? "rgba(255, 255, 255, 1)"
+                      : "rgba(30, 30, 30, 1)",
+                  boxShadow: (theme) =>
+                    theme.palette.mode === "light"
+                      ? "0 2px 4px rgba(0,0,0,0.2)"
+                      : "0 2px 4px rgba(0,0,0,0.5)",
                 },
               }}
             />
@@ -186,7 +231,7 @@ const MapSection = () => {
         </Box>
       </Box>
     </Card>
-  )
-}
+  );
+};
 
-export default MapSection
+export default MapSection;

@@ -1,9 +1,10 @@
 "use client"
 
-import { Box, Card } from "@mui/material"
+import { useTheme } from "@mui/material"
 import ReactApexChart from "react-apexcharts"
 
 const DCMetricsChart = () => {
+  const theme = useTheme()
   // Generate 7 days of data with 5-minute intervals for DC metrics
   const generateWeekData = () => {
     const data = []
@@ -148,6 +149,7 @@ const DCMetricsChart = () => {
         style: {
           fontSize: "11px",
           fontFamily: "Poppins, sans-serif",
+          colors: theme.palette.text.secondary,
         },
         datetimeFormatter: {
           year: "yyyy",
@@ -159,7 +161,7 @@ const DCMetricsChart = () => {
       },
       axisBorder: {
         show: true,
-        color: "#78909C",
+        color: theme.palette.divider,
         height: 1,
         width: "100%",
         offsetX: 0,
@@ -168,7 +170,7 @@ const DCMetricsChart = () => {
       axisTicks: {
         show: true,
         borderType: "solid",
-        color: "#78909C",
+        color: theme.palette.divider,
         height: 6, // Make ticks longer to look like underscores
         offsetX: 0,
         offsetY: 0,
@@ -181,7 +183,7 @@ const DCMetricsChart = () => {
           style: {
             fontSize: "12px",
             fontFamily: "Poppins, sans-serif",
-            color: "#FF5733",
+            color: theme.palette.mode === "dark" ? "#FF6B6B" : "#FF5733",
           },
         },
         min: 0,
@@ -192,12 +194,12 @@ const DCMetricsChart = () => {
           style: {
             fontSize: "11px",
             fontFamily: "Poppins, sans-serif",
-            colors: "#FF5733",
+            colors: theme.palette.mode === "dark" ? "#FF6B6B" : "#FF5733",
           },
         },
         axisBorder: {
           show: true,
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 1,
           offsetX: 0,
           offsetY: 0,
@@ -205,7 +207,7 @@ const DCMetricsChart = () => {
         axisTicks: {
           show: true,
           borderType: "solid",
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 6, // Make ticks longer to look like underscores
           offsetX: 0,
           offsetY: 0,
@@ -217,7 +219,7 @@ const DCMetricsChart = () => {
           style: {
             fontSize: "12px",
             fontFamily: "Poppins, sans-serif",
-            color: "#33FF57",
+            color: theme.palette.mode === "dark" ? "#4ECDC4" : "#33FF57",
           },
         },
         min: 0,
@@ -229,12 +231,12 @@ const DCMetricsChart = () => {
           style: {
             fontSize: "11px",
             fontFamily: "Poppins, sans-serif",
-            colors: "#33FF57",
+            colors: theme.palette.mode === "dark" ? "#4ECDC4" : "#33FF57",
           },
         },
         axisBorder: {
           show: true,
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 1,
           offsetX: 0,
           offsetY: 0,
@@ -242,7 +244,7 @@ const DCMetricsChart = () => {
         axisTicks: {
           show: true,
           borderType: "solid",
-          color: "#78909C",
+          color: theme.palette.divider,
           width: 6, // Make ticks longer to look like underscores
           offsetX: 0,
           offsetY: 0,
@@ -288,7 +290,7 @@ const DCMetricsChart = () => {
     ],
     grid: {
       show: true,
-      borderColor: "#78909C",
+      borderColor: theme.palette.divider,
       strokeDashArray: 0,
       position: "back",
       xaxis: {
@@ -310,6 +312,7 @@ const DCMetricsChart = () => {
     },
     tooltip: {
       shared: true,
+      theme: theme.palette.mode,
       x: {
         format: "dd/MM HH:mm", // Show date and time in tooltip
       },
@@ -325,13 +328,16 @@ const DCMetricsChart = () => {
         },
       ],
     },
-    colors: ["#FF5733", "#33FF57", "#3357FF"],
+    colors: theme.palette.mode === "dark" 
+      ? ["#FF6B6B", "#4ECDC4", "#95E1D3"] 
+      : ["#FF5733", "#33FF57", "#3357FF"],
     title: {
       text: "DC Metrics",
       align: "left",
       style: {
         fontSize: "14px",
         fontFamily: "Poppins, sans-serif",
+        color: theme.palette.text.primary,
       },
     },
     legend: {
@@ -340,6 +346,9 @@ const DCMetricsChart = () => {
       fontFamily: "Poppins, sans-serif",
       fontSize: "11px",
       offsetY: -10,
+      labels: {
+        colors: theme.palette.text.primary,
+      },
     },
   }
 
@@ -371,11 +380,7 @@ const DCMetricsChart = () => {
   ]
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Card sx={{ p: 2, boxShadow: "0 2px 4px rgba(0,0,0,0.1)", height: 350 }}>
-        <ReactApexChart options={chartOptions} series={chartSeries} type="line" height="320" />
-      </Card>
-    </Box>
+    <ReactApexChart options={chartOptions} series={chartSeries} type="line" height="220" />
   )
 }
 

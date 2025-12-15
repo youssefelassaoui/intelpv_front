@@ -315,12 +315,12 @@ const PlantsList = () => {
       <Grid
         container
         sx={{
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "background.default",
           flex: 1,
-          padding: { xs: 2, sm: 3 }, // Responsive padding
+          padding: { xs: 2, sm: 3 },
           overflow: "hidden",
           maxWidth: "100%",
-          justifyContent: "center", // Center the grid content
+          justifyContent: "center",
         }}
       >
         <Grid
@@ -337,9 +337,9 @@ const PlantsList = () => {
               sx={{
                 fontFamily: "'Poppins', sans-serif",
                 fontWeight: 600,
-                color: "#333",
+                color: "text.primary",
                 mb: 1,
-                fontSize: { xs: "1.5rem", sm: "2rem" }, // Responsive font size
+                fontSize: { xs: "1.5rem", sm: "2rem" },
               }}
             >
               {t.plantList.title}
@@ -348,10 +348,10 @@ const PlantsList = () => {
               variant="subtitle1"
               sx={{
                 fontFamily: "'Poppins', sans-serif",
-                color: "#666",
+                color: "text.secondary",
                 maxWidth: "800px",
                 mx: "auto",
-                fontSize: { xs: "0.875rem", sm: "1rem" }, // Responsive font size
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               }}
             >
               {t.plantList.subtitle}

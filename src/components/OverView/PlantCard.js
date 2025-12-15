@@ -13,6 +13,7 @@ import { LocationOn, BoltOutlined } from "@mui/icons-material";
 import { Columns4 } from "lucide-react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translations } from "../../translations";
+import { useNavigate } from "react-router-dom";
 
 // Styled Components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -51,16 +52,21 @@ const InfoRow = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(0.5),
 }));
 
-const PlantCard = ({ plant }) => {
+const PlantCard = ({ plant, onSelect }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const navigate = useNavigate();
   
   const getTranslatedStatus = (status) => {
     return status === "Active" ? t.overview.status.active : t.overview.status.maintenance;
   };
   
+  const handleSelect = () => {
+    onSelect?.(plant);
+  };
+
   return (
-    <StyledCard>
+    <StyledCard onClick={handleSelect}>
       <StyledCardMedia image={plant.image} title={plant.name}>
         <StatusChip label={getTranslatedStatus(plant.status)} status={plant.status} size="small" />
       </StyledCardMedia>
@@ -73,7 +79,7 @@ const PlantCard = ({ plant }) => {
             fontWeight: 600,
             fontSize: "0.9rem",
             mb: 1.5,
-            color: "#16423C",
+            color: "text.primary",
           }}
         >
           {plant.name}
@@ -141,6 +147,11 @@ const PlantCard = ({ plant }) => {
         <Chip
           label={t.common.viewDetails}
           size="small"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect?.(plant);
+            navigate("/plant-measures", { state: { plant } });
+          }}
           sx={{
             backgroundColor: "#129990",
             color: "white",

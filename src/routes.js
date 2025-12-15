@@ -36,12 +36,6 @@ const routes = [
     protected: true,
   },
   {
-    path: "/alarmes",
-    element: () => <div>Alarmes Page</div>,
-    exact: true,
-    protected: true,
-  },
-  {
     path: "/weather-station",
     element: WeatherStation,
     exact: true,

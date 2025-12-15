@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Box, Typography, Card, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -15,11 +16,11 @@ import {
 
 // Update the StatsCard styled component to reduce padding and height
 const StatsCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(1), // Reduced from 2
+  padding: theme.spacing(1),
   display: "flex",
   alignItems: "center",
-  gap: theme.spacing(1), // Reduced from 1.5
-  backgroundColor: "white",
+  gap: theme.spacing(1),
+  backgroundColor: theme.palette.background.paper,
   transition: "all 0.3s ease-in-out",
   "&:hover": {
     transform: "translateY(-2px)",
@@ -27,32 +28,43 @@ const StatsCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-// Horizontal scrollable container for plant cards
+// Horizontal scrollable container for plant cards (mobile)
 const ScrollableContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   overflowX: "auto",
-  gap: theme.spacing(1.5), // Reduced from 2
-  padding: theme.spacing(0.5, 0), // Reduced from 1, 0
+  gap: theme.spacing(1.5),
+  padding: theme.spacing(0.5, 0),
+  [theme.breakpoints.up("md")]: {
+    display: "none",
+  },
   "&::-webkit-scrollbar": {
     height: "6px",
   },
   "&::-webkit-scrollbar-track": {
-    backgroundColor: "#f1f1f1",
+    backgroundColor: theme.palette.mode === "light" ? "#f1f1f1" : "#2a2a2a",
     borderRadius: "10px",
   },
   "&::-webkit-scrollbar-thumb": {
-    backgroundColor: "#c1c1c1",
+    backgroundColor: theme.palette.mode === "light" ? "#c1c1c1" : "#555555",
     borderRadius: "10px",
     "&:hover": {
-      backgroundColor: "#a8a8a8",
+      backgroundColor: theme.palette.mode === "light" ? "#a8a8a8" : "#777777",
     },
   },
 }));
 
-// Card wrapper to set fixed width
+// Card wrapper for horizontal scroll (mobile)
 const CardWrapper = styled(Box)(({ theme }) => ({
   width: "280px",
   flexShrink: 0,
+}));
+
+// Grid container for larger screens
+const GridContainer = styled(Box)(({ theme }) => ({
+  display: "none",
+  [theme.breakpoints.up("md")]: {
+    display: "block",
+  },
 }));
 
 // Static Data
@@ -60,6 +72,7 @@ const plants = [
   {
     id: 1,
     name: "Green & Smart Building Park (Brique Rouge)",
+    plantId: 49951765,
     image: "/gsbp.jpg",
     location: "Ben Guerir 43150, MO",
     capacity: "6 kW",
@@ -69,6 +82,7 @@ const plants = [
   {
     id: 2,
     name: "Green Energy Park (Trina)",
+    plantId: null,
     image: "/trina.jpg",
     location: "Route Régionale Kelaa Km 3, R206, Ben Guerir, MO",
     capacity: "22.23 kW",
@@ -78,6 +92,7 @@ const plants = [
   {
     id: 3,
     name: "Hospital Universario Rien Sofía",
+    plantId: 36076361,
     image: "/hospital.jpeg",
     location: "Av. Menéndez Pidal, s/n, Poniente Sur, 14004 Córdoba, ES",
     capacity: "1.72 MW",
@@ -87,6 +102,7 @@ const plants = [
   {
     id: 6,
     name: "SESA Project (Douar)",
+    plantId: null,
     image: "/douar.jpeg",
     location: "64F2+734, Ben Guerir",
     capacity: "25 KW",
@@ -96,6 +112,7 @@ const plants = [
   {
     id: 4,
     name: "Mohammed VI Museum of Modern and Contemporary Art",
+    plantId: 33783322,
     image: "/musee.jpg",
     location: " 2 Av. Moulay Hassan, Rabat, MO",
     capacity: "136 KW",
@@ -118,7 +135,7 @@ const plants = [
 const Overview = () => {
   const { language } = useLanguage();
   const t = translations[language];
-  
+
   // Calculate summary statistics
   const totalCapacity = plants.reduce((sum, plant) => {
     return sum + Number.parseFloat(plant.capacity);
@@ -140,12 +157,12 @@ const Overview = () => {
       <Grid
         container
         sx={{
-          backgroundColor: "#f5f5f5",
+          backgroundColor: "background.default",
           flex: 1,
-          padding: { xs: 2, sm: 3 }, // Responsive padding
+          padding: { xs: 2, sm: 3 },
           overflow: "hidden",
           maxWidth: "100%",
-          justifyContent: "center", // Center the grid content
+          justifyContent: "center",
         }}
       >
         <Grid
@@ -156,6 +173,7 @@ const Overview = () => {
             width: "100%",
           }}
         >
+          {/* Selected Plant Bar */}
           {/* Header Section */}
           {/* Replace the Stats Cards Grid section with this updated version */}
           <Grid container spacing={1.5} sx={{ mb: 1.5 }}>
@@ -165,16 +183,18 @@ const Overview = () => {
               <StatsCard>
                 <Box
                   sx={{
-                    backgroundColor: "rgba(46, 125, 50, 0.1)",
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === "light"
+                        ? "rgba(46, 125, 50, 0.1)"
+                        : "rgba(46, 125, 50, 0.2)",
                     borderRadius: "50%",
-                    p: 0.75, // Reduced from 1
+                    p: 0.75,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <BoltOutlined sx={{ fontSize: 20, color: "#2E7D32" }} />{" "}
-                  {/* Reduced from 24 */}
+                  <BoltOutlined sx={{ fontSize: 20, color: "primary.main" }} />
                 </Box>
                 <Box>
                   <Typography
@@ -182,8 +202,8 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       color: "text.secondary",
-                      fontSize: "0.65rem", // Reduced from 0.75rem
-                      lineHeight: 1.2, // Added to reduce line height
+                      fontSize: "0.65rem",
+                      lineHeight: 1.2,
                     }}
                   >
                     {t.overview.totalCapacity}
@@ -193,9 +213,9 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
-                      color: "#2E7D32",
-                      fontSize: "0.9rem", // Reduced from default h6 size
-                      lineHeight: 1.2, // Added to reduce line height
+                      color: "primary.main",
+                      fontSize: "0.9rem",
+                      lineHeight: 1.2,
                     }}
                   >
                     2.31 MW
@@ -207,16 +227,18 @@ const Overview = () => {
               <StatsCard>
                 <Box
                   sx={{
-                    backgroundColor: "rgba(46, 125, 50, 0.1)",
+                    backgroundColor: (theme) =>
+                      theme.palette.mode === "light"
+                        ? "rgba(46, 125, 50, 0.1)"
+                        : "rgba(46, 125, 50, 0.2)",
                     borderRadius: "50%",
-                    p: 0.75, // Reduced from 1
+                    p: 0.75,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <PowerOutlined sx={{ fontSize: 20, color: "#2E7D32" }} />{" "}
-                  {/* Reduced from 24 */}
+                  <PowerOutlined sx={{ fontSize: 20, color: "primary.main" }} />
                 </Box>
                 <Box>
                   <Typography
@@ -224,8 +246,8 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       color: "text.secondary",
-                      fontSize: "0.65rem", // Reduced from 0.75rem
-                      lineHeight: 1.2, // Added to reduce line height
+                      fontSize: "0.65rem",
+                      lineHeight: 1.2,
                     }}
                   >
                     {t.overview.totalStrings}
@@ -235,9 +257,9 @@ const Overview = () => {
                     sx={{
                       fontFamily: "'Poppins', sans-serif",
                       fontWeight: 600,
-                      color: "#33372C",
-                      fontSize: "0.9rem", // Reduced from default h6 size
-                      lineHeight: 1.2, // Added to reduce line height
+                      color: "text.primary",
+                      fontSize: "0.9rem",
+                      lineHeight: 1.2,
                     }}
                   >
                     317
@@ -291,8 +313,9 @@ const Overview = () => {
             </Grid>
           </Grid>
 
-          {/* Plants Cards Section - SINGLE ROW WITH HORIZONTAL SCROLL */}
+          {/* Plants Cards Section - Responsive Layout */}
           <Box sx={{ mb: 1 }}>
+            {/* Mobile: Horizontal Scroll */}
             <ScrollableContainer>
               {plants.map((plant) => (
                 <CardWrapper key={plant.id}>
@@ -300,6 +323,17 @@ const Overview = () => {
                 </CardWrapper>
               ))}
             </ScrollableContainer>
+
+            {/* Desktop/Tablet: Grid Layout */}
+            <GridContainer>
+              <Grid container spacing={2}>
+                {plants.map((plant) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={plant.id}>
+                    <PlantCard plant={plant} />
+                  </Grid>
+                ))}
+              </Grid>
+            </GridContainer>
           </Box>
 
           {/* Charts Section */}

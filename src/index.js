@@ -7,24 +7,34 @@ import { ClerkProvider } from '@clerk/clerk-react';
 
 const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY || 'pk_test_d2hvbGUtYnVnLTc3LmNsZXJrLmFjY291bnRzLmRldiQ';
 
-if (!PUBLISHABLE_KEY) {
-  throw new Error('Missing Clerk Publishable Key');
+const isValidKey = PUBLISHABLE_KEY && !PUBLISHABLE_KEY.endsWith('$') && PUBLISHABLE_KEY.startsWith('pk_');
+
+if (!isValidKey) {
+  console.warn('Invalid or missing Clerk Publishable Key. Running without authentication.');
 }
 
-console.log('Using Clerk Key:', PUBLISHABLE_KEY.substring(0, 20) + '...');
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <ClerkProvider 
-      publishableKey={PUBLISHABLE_KEY} 
-      afterSignOutUrl="/sign-in"
-      signUpUrl={null}
-    >
+
+if (isValidKey) {
+  console.log('Using Clerk Key:', PUBLISHABLE_KEY.substring(0, 20) + '...');
+  root.render(
+    <React.StrictMode>
+      <ClerkProvider 
+        publishableKey={PUBLISHABLE_KEY} 
+        afterSignOutUrl="/sign-in"
+        signUpUrl={null}
+      >
+        <App />
+      </ClerkProvider>
+    </React.StrictMode>
+  );
+} else {
+  root.render(
+    <React.StrictMode>
       <App />
-    </ClerkProvider>
-  </React.StrictMode>
-);
+    </React.StrictMode>
+  );
+}
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

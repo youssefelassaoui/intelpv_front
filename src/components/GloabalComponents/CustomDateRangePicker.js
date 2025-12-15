@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Box, Typography, Paper, Popover } from "@mui/material";
+import { Box, Typography, Paper, Popover, useTheme } from "@mui/material";
 import { Calendar, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import {
   format,
@@ -16,6 +16,7 @@ import {
 } from "date-fns";
 
 const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectionStart, setSelectionStart] = useState(startDate || new Date());
@@ -107,40 +108,40 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
           <ChevronLeft
             size={20}
             onClick={handlePrevMonth}
-            style={{ cursor: "pointer", color: "#666" }}
+            style={{ cursor: "pointer", color: theme.palette.text.secondary }}
           />
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
             <Typography
               sx={{
                 fontSize: "16px",
                 fontFamily: "Poppins, sans-serif",
-                color: "#333",
+                color: "text.primary",
                 display: "flex",
                 alignItems: "center",
                 gap: 0.5,
               }}
             >
               {format(currentMonth, "MMMM")}
-              <ChevronDown size={16} />
+              <ChevronDown size={16} color={theme.palette.text.secondary} />
             </Typography>
             <Typography
               sx={{
                 fontSize: "16px",
                 fontFamily: "Poppins, sans-serif",
-                color: "#333",
+                color: "text.primary",
                 display: "flex",
                 alignItems: "center",
                 gap: 0.5,
               }}
             >
               {format(currentMonth, "yyyy")}
-              <ChevronDown size={16} />
+              <ChevronDown size={16} color={theme.palette.text.secondary} />
             </Typography>
           </Box>
           <ChevronRight
             size={20}
             onClick={handleNextMonth}
-            style={{ cursor: "pointer", color: "#666" }}
+            style={{ cursor: "pointer", color: theme.palette.text.secondary }}
           />
         </Box>
 
@@ -156,7 +157,7 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
               key={day}
               sx={{
                 textAlign: "center",
-                color: "#666",
+                color: "text.secondary",
                 fontSize: "12px",
                 fontFamily: "Poppins, sans-serif",
                 mb: 1,
@@ -179,17 +180,21 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
                 justifyContent: "center",
                 cursor: "pointer",
                 borderRadius: isInRange(day) ? "0" : "16px",
-                backgroundColor: isInRange(day) ? "#77B254" : "transparent",
+                backgroundColor: isInRange(day) 
+                  ? theme.palette.primary.main 
+                  : "transparent",
                 color: isInRange(day)
                   ? "#fff"
                   : isSameMonth(day, currentMonth)
-                  ? "#333"
-                  : "#ccc",
+                  ? theme.palette.text.primary
+                  : theme.palette.text.disabled,
                 fontSize: "13px",
                 fontFamily: "Poppins, sans-serif",
                 position: "relative",
                 "&:hover": {
-                  backgroundColor: isInRange(day) ? "#66a046" : "#f0f0f0",
+                  backgroundColor: isInRange(day) 
+                    ? theme.palette.primary.dark 
+                    : theme.palette.action.hover,
                 },
                 ...(isSameDay(day, new Date()) && {
                   "&::after": {
@@ -225,36 +230,41 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
         <Box
           onClick={handleClick}
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1,
-            border: "1px solid #85A947",
-            borderRadius: "8px",
-            padding: "6px 12px",
+            gap: 0.5,
+            border: "1px solid",
+            borderColor: "primary.main",
+            borderRadius: "6px",
+            padding: "4px 8px",
             cursor: "pointer",
-            backgroundColor: "#fff",
+            backgroundColor: "background.paper",
             "&:hover": {
-              backgroundColor: "#f8f9fa",
+              backgroundColor: "action.hover",
             },
           }}
         >
-          <Calendar size={16} color="#85A947" />
+          <Calendar size={12} color={theme.palette.primary.main} />
           <Typography
-            sx={{ fontSize: "13px", fontFamily: "Poppins, sans-serif" }}
+            sx={{ 
+              fontSize: "10px", 
+              fontFamily: "Poppins, sans-serif",
+              color: "text.primary",
+            }}
           >
             {selectionStart
-              ? format(selectionStart, "MM/dd/yyyy")
-              : "Select date"}
+              ? format(selectionStart, "dd/MM/yyyy")
+              : "Select"}
           </Typography>
         </Box>
         <Typography
           sx={{
-            color: "#666",
-            fontSize: "13px",
+            color: "text.secondary",
+            fontSize: "10px",
             fontFamily: "Poppins, sans-serif",
           }}
         >
@@ -265,22 +275,27 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 1,
-            border: "1px solid #85A947",
-            borderRadius: "8px",
-            padding: "6px 12px",
+            gap: 0.5,
+            border: "1px solid",
+            borderColor: "primary.main",
+            borderRadius: "6px",
+            padding: "4px 8px",
             cursor: "pointer",
-            backgroundColor: "#fff",
+            backgroundColor: "background.paper",
             "&:hover": {
-              backgroundColor: "#f8f9fa",
+              backgroundColor: "action.hover",
             },
           }}
         >
-          <Calendar size={16} color="#85A947" />
+          <Calendar size={12} color={theme.palette.primary.main} />
           <Typography
-            sx={{ fontSize: "13px", fontFamily: "Poppins, sans-serif" }}
+            sx={{ 
+              fontSize: "10px", 
+              fontFamily: "Poppins, sans-serif",
+              color: "text.primary",
+            }}
           >
-            {selectionEnd ? format(selectionEnd, "MM/dd/yyyy") : "Select date"}
+            {selectionEnd ? format(selectionEnd, "dd/MM/yyyy") : "Select"}
           </Typography>
         </Box>
       </Box>
@@ -301,10 +316,17 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
             boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             borderRadius: "8px",
             mt: 1,
+            backgroundColor: "background.paper",
           },
         }}
       >
-        <Paper sx={{ borderRadius: "8px", overflow: "hidden" }}>
+        <Paper 
+          sx={{ 
+            borderRadius: "8px", 
+            overflow: "hidden",
+            backgroundColor: "background.paper",
+          }}
+        >
           {renderCalendar()}
         </Paper>
       </Popover>

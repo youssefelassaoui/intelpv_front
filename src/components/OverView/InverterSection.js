@@ -5,37 +5,36 @@ import { Box, Card, Typography, Chip, Grid } from "@mui/material";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { translations } from "../../translations";
 
-// Inverter image paths and names for our plants
 const inverterData = {
-  "Green & Smart..": {
+  "Green & Smart B.P.": {
     images: ["/SUN2000-20KTL-M0-removebg-preview.png"],
     names: ["SUN2000-20KTL-M0"],
-    color: "#129990",
+    color: "#2E7D32",
   },
-  "Green Energy Park (Trina)": {
+  "Green Energy Park": {
     images: ["/SUN2000-100KTL-M1-removebg-preview.png"],
     names: ["SUN2000-100KTL-M1"],
-    color: "#129990",
+    color: "#6EC3C4",
   },
-  "Hospital Universario..": {
+  "Hospital Rien Sofía": {
     images: ["/SUN2000-60KTL-M0-removebg-preview.png", "/SUN2000L-5KTL-removebg-preview.png"],
     names: ["SUN2000-60KTL-M0", "SUN2000L-5KTL"],
-    color: "#129990",
+    color: "#1976D2",
   },
   "Mohammed VI Museum": {
     images: ["/SUN2000L-5KTL-removebg-preview.png"],
     names: ["SUN2000L-5KTL"],
-    color: "#129990",
+    color: "#F57C00",
   },
   "Fkih ben saleh": {
     images: ["/SUN2000-60KTL-M0-removebg-preview.png", "/SUN2000-20KTL-M0-removebg-preview.png"],
     names: ["SUN2000-60KTL-M0", "SUN2000-20KTL-M0"],
-    color: "#129990",
+    color: "#63AEE2",
   },
   "SESA Project": {
     images: ["/sesa.webp"],
     names: [" DEYE SUN-8K-SG04LP3-EU"],
-    color: "#129990",
+    color: "#5C8FA6",
   },
 };
 
@@ -43,9 +42,8 @@ const InverterSection = () => {
   const { language } = useLanguage();
   const t = translations[language];
   
-  // State to keep track of selected plant
   const [selectedPlant, setSelectedPlant] = useState(
-    "Green & Smart.."
+    "Green & Smart B.P."
   );
 
   // Chip click handler
@@ -113,7 +111,7 @@ const InverterSection = () => {
                 fontFamily: "'Poppins', sans-serif",
                 fontSize: "0.65rem",
                 fontWeight: 500,
-                color: "#333",
+                color: "text.primary",
                 textAlign: "center",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -138,6 +136,7 @@ const InverterSection = () => {
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
+        backgroundColor: "background.paper",
       }}
     >
       <Typography
@@ -147,6 +146,7 @@ const InverterSection = () => {
           fontFamily: "Poppins, sans-serif",
           fontWeight: 500,
           mb: 1,
+          color: "text.primary",
         }}
       >
         {t.overview.plantInverters}
@@ -168,23 +168,34 @@ const InverterSection = () => {
             label={plant}
             onClick={() => handleChipClick(plant)}
             sx={{
-              backgroundColor:
+              backgroundColor: (theme) =>
                 selectedPlant === plant
                   ? inverterData[plant].color
-                  : "rgba(255, 255, 255, 0.9)",
-              color: selectedPlant === plant ? "white" : "#333",
+                  : theme.palette.mode === "light"
+                    ? "rgba(255, 255, 255, 0.9)"
+                    : "rgba(30, 30, 30, 0.9)",
+              color: (theme) =>
+                selectedPlant === plant ? "white" : theme.palette.text.primary,
               border: `1px solid ${inverterData[plant].color}`,
               fontFamily: "'Poppins', sans-serif",
               fontWeight: 500,
               fontSize: "0.65rem",
               height: "24px",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              boxShadow: (theme) =>
+                theme.palette.mode === "light"
+                  ? "0 1px 3px rgba(0,0,0,0.1)"
+                  : "0 1px 3px rgba(0,0,0,0.5)",
               "&:hover": {
-                backgroundColor:
+                backgroundColor: (theme) =>
                   selectedPlant === plant
                     ? inverterData[plant].color
-                    : "rgba(255, 255, 255, 1)",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+                    : theme.palette.mode === "light"
+                      ? "rgba(255, 255, 255, 1)"
+                      : "rgba(30, 30, 30, 1)",
+                boxShadow: (theme) =>
+                  theme.palette.mode === "light"
+                    ? "0 2px 4px rgba(0,0,0,0.2)"
+                    : "0 2px 4px rgba(0,0,0,0.5)",
               },
             }}
           />
