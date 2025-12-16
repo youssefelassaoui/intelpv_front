@@ -28,13 +28,13 @@ const StatsCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-// Horizontal scrollable container for plant cards (mobile)
+// Horizontal scrollable container for plant cards (mobile - very small screens only)
 const ScrollableContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   overflowX: "auto",
   gap: theme.spacing(1.5),
   padding: theme.spacing(0.5, 0),
-  [theme.breakpoints.up("md")]: {
+  [theme.breakpoints.up("sm")]: {
     display: "none",
   },
   "&::-webkit-scrollbar": {
@@ -59,11 +59,66 @@ const CardWrapper = styled(Box)(({ theme }) => ({
   flexShrink: 0,
 }));
 
-// Grid container for larger screens
+// Grid container for larger screens - shows all cards in one row until very small screens
 const GridContainer = styled(Box)(({ theme }) => ({
   display: "none",
+  [theme.breakpoints.up("sm")]: {
+    display: "flex",
+    flexWrap: "nowrap",
+    gap: theme.spacing(1.5),
+    overflowX: "auto",
+    "&::-webkit-scrollbar": {
+      height: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      backgroundColor: theme.palette.mode === "light" ? "#f1f1f1" : "#2a2a2a",
+      borderRadius: "10px",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      backgroundColor: theme.palette.mode === "light" ? "#c1c1c1" : "#555555",
+      borderRadius: "10px",
+      "&:hover": {
+        backgroundColor: theme.palette.mode === "light" ? "#a8a8a8" : "#777777",
+      },
+    },
+    "& > *": {
+      flex: "0 0 auto",
+      minWidth: "240px",
+      maxWidth: "280px",
+      [theme.breakpoints.up("md")]: {
+        minWidth: "220px",
+        maxWidth: "260px",
+      },
+      [theme.breakpoints.up("lg")]: {
+        minWidth: "200px",
+        maxWidth: "240px",
+      },
+      [theme.breakpoints.up("xl")]: {
+        minWidth: "180px",
+        maxWidth: "220px",
+      },
+    },
+  },
   [theme.breakpoints.up("md")]: {
-    display: "block",
+    flexWrap: "wrap",
+    overflowX: "visible",
+    "& > *": {
+      flex: "1 1 calc(33.333% - 12px)",
+      minWidth: "200px",
+      maxWidth: "none",
+    },
+  },
+  [theme.breakpoints.up("lg")]: {
+    "& > *": {
+      flex: "1 1 calc(20% - 12px)",
+      minWidth: "180px",
+    },
+  },
+  [theme.breakpoints.up("xl")]: {
+    "& > *": {
+      flex: "1 1 calc(16.666% - 12px)",
+      minWidth: "160px",
+    },
   },
 }));
 
@@ -73,7 +128,7 @@ const plants = [
     id: 1,
     name: "Green & Smart Building Park (Brique Rouge)",
     plantId: 49951765,
-    image: "/gsbp.jpg",
+    image: "/gsbp.png",
     location: "Ben Guerir 43150, MO",
     capacity: "6 kW",
     strings: 3,
@@ -83,7 +138,7 @@ const plants = [
     id: 2,
     name: "Green Energy Park (Trina)",
     plantId: null,
-    image: "/trina.jpg",
+    image: "/trina.png",
     location: "Route Régionale Kelaa Km 3, R206, Ben Guerir, MO",
     capacity: "22.23 kW",
     strings: 6,
@@ -315,7 +370,7 @@ const Overview = () => {
 
           {/* Plants Cards Section - Responsive Layout */}
           <Box sx={{ mb: 1 }}>
-            {/* Mobile: Horizontal Scroll */}
+            {/* Very Small Screens (xs): Horizontal Scroll */}
             <ScrollableContainer>
               {plants.map((plant) => (
                 <CardWrapper key={plant.id}>
@@ -324,15 +379,13 @@ const Overview = () => {
               ))}
             </ScrollableContainer>
 
-            {/* Desktop/Tablet: Grid Layout */}
+            {/* Small and Up: All cards in one row (scrollable on small, wrapped on larger) */}
             <GridContainer>
-              <Grid container spacing={2}>
-                {plants.map((plant) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={plant.id}>
-                    <PlantCard plant={plant} />
-                  </Grid>
-                ))}
-              </Grid>
+              {plants.map((plant) => (
+                <Box key={plant.id} sx={{ width: "100%" }}>
+                  <PlantCard plant={plant} />
+                </Box>
+              ))}
             </GridContainer>
           </Box>
 

@@ -65,9 +65,20 @@ const PlantCard = ({ plant, onSelect }) => {
     onSelect?.(plant);
   };
 
+  const imageUrl = plant.image?.startsWith('/') 
+    ? `${process.env.PUBLIC_URL || ''}${plant.image}` 
+    : plant.image;
+
   return (
     <StyledCard onClick={handleSelect}>
-      <StyledCardMedia image={plant.image} title={plant.name}>
+      <StyledCardMedia 
+        image={imageUrl || `${process.env.PUBLIC_URL || ''}/placeholder.svg`} 
+        title={plant.name}
+        sx={{
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
         <StatusChip label={getTranslatedStatus(plant.status)} status={plant.status} size="small" />
       </StyledCardMedia>
       <CardContent sx={{ flexGrow: 1, p: 1.5 }}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Box, Card, Typography, Chip, useTheme } from "@mui/material";
 import {
   MapContainer,
@@ -69,13 +69,16 @@ function FlyToMarker({ coordinates }) {
   return null;
 }
 
-// Custom PV system icon
-const pvSystemIcon = new L.Icon({
-  iconUrl: "/SystemIcon.svg",
-  iconSize: [28, 28], // Reduced from 32, 32
-  iconAnchor: [14, 14], // Adjusted for new size
-  popupAnchor: [0, -14], // Adjusted for new size
-});
+// Custom PV system icon - needs to be created inside component to handle dark mode
+const createPvSystemIcon = (isDarkMode) => {
+  const iconUrl = `${process.env.PUBLIC_URL || ''}/SystemIcon.svg`;
+  return new L.Icon({
+    iconUrl: iconUrl,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -14],
+  });
+};
 
 const MapSection = () => {
   const [activeLocation, setActiveLocation] = useState(null);
@@ -86,6 +89,44 @@ const MapSection = () => {
   const handleChipClick = (plant) => {
     setActiveLocation(plant);
   };
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.id = 'leaflet-dark-mode-styles';
+    style.textContent = `
+      .leaflet-container {
+        background-color: ${isDarkMode ? '#1a1a1a' : '#f5f5f5'} !important;
+      }
+      .leaflet-tooltip {
+        background-color: ${isDarkMode ? 'rgba(30, 30, 30, 0.95)' : 'rgba(255, 255, 255, 0.95)'} !important;
+        color: ${isDarkMode ? '#ffffff' : '#000000'} !important;
+        border: 1px solid ${isDarkMode ? '#555' : '#ccc'} !important;
+        box-shadow: ${isDarkMode ? '0 2px 8px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.2)'} !important;
+      }
+      .leaflet-control {
+        background-color: ${isDarkMode ? 'rgba(30, 30, 30, 0.9)' : 'rgba(255, 255, 255, 0.9)'} !important;
+      }
+      .leaflet-control-zoom a {
+        background-color: ${isDarkMode ? 'rgba(30, 30, 30, 0.9)' : 'rgba(255, 255, 255, 0.9)'} !important;
+        color: ${isDarkMode ? '#ffffff' : '#000000'} !important;
+        border-color: ${isDarkMode ? '#555' : '#ccc'} !important;
+      }
+      .leaflet-control-zoom a:hover {
+        background-color: ${isDarkMode ? 'rgba(50, 50, 50, 0.9)' : 'rgba(240, 240, 240, 0.9)'} !important;
+      }
+    `;
+    const existingStyle = document.getElementById('leaflet-dark-mode-styles');
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    document.head.appendChild(style);
+    return () => {
+      const styleToRemove = document.getElementById('leaflet-dark-mode-styles');
+      if (styleToRemove) {
+        document.head.removeChild(styleToRemove);
+      }
+    };
+  }, [isDarkMode]);
 
   return (
     <Card
@@ -136,8 +177,8 @@ const MapSection = () => {
         >
           {isDarkMode ? (
             <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
-              url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             />
           ) : (
             <TileLayer
@@ -150,7 +191,7 @@ const MapSection = () => {
             <Marker
               key={plant.id}
               position={plant.coordinates}
-              icon={pvSystemIcon}
+              icon={createPvSystemIcon(isDarkMode)}
             >
               <Tooltip permanent direction="top" offset={[0, -14]}>
                 <Box sx={{ textAlign: "center" }}>
