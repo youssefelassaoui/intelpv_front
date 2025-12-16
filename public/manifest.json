@@ -1,25 +1,39 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "IntelligentPV",
+  "name": "IntelligentPV - Solar Power Monitoring & Analytics",
+  "description": "Monitor and manage your solar power systems with advanced analytics and real-time insights",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "intelicoon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "intelicon.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
-      "src": "logo512.png",
+      "src": "intelicon.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "intelligentpv-logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
   "start_url": ".",
+  "scope": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait-primary",
+  "theme_color": "#129990",
+  "background_color": "#ffffff",
+  "categories": ["utilities", "productivity", "business"],
+  "lang": "en",
+  "dir": "ltr"
 }

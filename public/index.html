@@ -2,47 +2,76 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/intelicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/intelicon.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="theme-color" content="#129990" />
+    
+    <!-- Primary Meta Tags -->
+    <title>IntelligentPV - Solar Power Monitoring & Analytics Platform</title>
+    <meta name="title" content="IntelligentPV - Solar Power Monitoring & Analytics Platform" />
+    <meta name="description" content="Monitor and manage your solar power systems with advanced analytics and real-time insights. Track energy production, optimize performance, and maximize your renewable energy investment. Developed by Green Energy Park." />
+    <meta name="keywords" content="solar power, photovoltaic, energy monitoring, renewable energy, PV systems, solar analytics, energy management, Green Energy Park" />
+    <meta name="author" content="Green Energy Park" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="7 days" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://intelligentpv.online/" />
+    <meta property="og:title" content="IntelligentPV - Solar Power Monitoring & Analytics Platform" />
+    <meta property="og:description" content="Monitor and manage your solar power systems with advanced analytics and real-time insights. Track energy production, optimize performance, and maximize your renewable energy investment." />
+    <meta property="og:image" content="%PUBLIC_URL%/intelligentpv-logo.png" />
+    <meta property="og:site_name" content="IntelligentPV" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://intelligentpv.online/" />
+    <meta property="twitter:title" content="IntelligentPV - Solar Power Monitoring & Analytics Platform" />
+    <meta property="twitter:description" content="Monitor and manage your solar power systems with advanced analytics and real-time insights. Track energy production, optimize performance, and maximize your renewable energy investment." />
+    <meta property="twitter:image" content="%PUBLIC_URL%/intelligentpv-logo.png" />
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="%PUBLIC_URL%/intelicoon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/intelicon.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/intelicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/intelicon.png" />
+    
+    <!-- PWA / Manifest -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="IntelligentPV" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.intelligentpv.online" />
+    
+    <!-- Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <!--
-
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Performance -->
+    <meta name="referrer" content="no-referrer-when-downgrade" />
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Poppins', sans-serif; text-align: center; padding: 20px;">
+        <div>
+          <h1 style="color: #129990; margin-bottom: 20px;">IntelligentPV</h1>
+          <p style="color: #666; font-size: 16px;">You need to enable JavaScript to run this application.</p>
+          <p style="color: #999; font-size: 14px; margin-top: 10px;">Please enable JavaScript in your browser settings and refresh the page.</p>
+        </div>
+      </div>
+    </noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>
