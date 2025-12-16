@@ -59,13 +59,13 @@ const CardWrapper = styled(Box)(({ theme }) => ({
   flexShrink: 0,
 }));
 
-// Grid container for larger screens - shows all cards in one row until very small screens
+// Grid container - shows all cards in one row, reducing size on smaller screens
 const GridContainer = styled(Box)(({ theme }) => ({
   display: "none",
   [theme.breakpoints.up("sm")]: {
     display: "flex",
     flexWrap: "nowrap",
-    gap: theme.spacing(1.5),
+    gap: theme.spacing(1),
     overflowX: "auto",
     "&::-webkit-scrollbar": {
       height: "6px",
@@ -82,42 +82,18 @@ const GridContainer = styled(Box)(({ theme }) => ({
       },
     },
     "& > *": {
-      flex: "0 0 auto",
-      minWidth: "240px",
-      maxWidth: "280px",
+      flex: "1 1 0",
+      minWidth: "140px",
+      maxWidth: "100%",
       [theme.breakpoints.up("md")]: {
-        minWidth: "220px",
-        maxWidth: "260px",
+        minWidth: "160px",
       },
       [theme.breakpoints.up("lg")]: {
-        minWidth: "200px",
-        maxWidth: "240px",
+        minWidth: "180px",
       },
       [theme.breakpoints.up("xl")]: {
-        minWidth: "180px",
-        maxWidth: "220px",
+        minWidth: "200px",
       },
-    },
-  },
-  [theme.breakpoints.up("md")]: {
-    flexWrap: "wrap",
-    overflowX: "visible",
-    "& > *": {
-      flex: "1 1 calc(33.333% - 12px)",
-      minWidth: "200px",
-      maxWidth: "none",
-    },
-  },
-  [theme.breakpoints.up("lg")]: {
-    "& > *": {
-      flex: "1 1 calc(20% - 12px)",
-      minWidth: "180px",
-    },
-  },
-  [theme.breakpoints.up("xl")]: {
-    "& > *": {
-      flex: "1 1 calc(16.666% - 12px)",
-      minWidth: "160px",
     },
   },
 }));
