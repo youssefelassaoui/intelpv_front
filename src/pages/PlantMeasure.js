@@ -52,11 +52,8 @@ const PlantMeasures = () => {
   const [devices, setDevices] = useState([]);
   
   const getDefaultDateRange = () => {
-    const end = new Date();
-    end.setUTCHours(23, 59, 59, 999);
-    const start = new Date(end);
-    start.setUTCDate(start.getUTCDate() - 7);
-    start.setUTCHours(0, 0, 0, 0);
+    const start = new Date("2025-09-01T00:00:00Z");
+    const end = new Date("2025-09-20T23:59:59Z");
     return { start, end };
   };
 

@@ -112,11 +112,8 @@ const ChartSection = () => {
   const t = translations[language];
 
   const getDefaultDateRange = () => {
-    const end = new Date();
-    end.setUTCHours(23, 59, 59, 999);
-    const start = new Date(end);
-    start.setUTCDate(start.getUTCDate() - 30);
-    start.setUTCHours(0, 0, 0, 0);
+    const start = new Date("2025-11-15T00:00:00Z");
+    const end = new Date("2025-11-30T23:59:59Z");
     return { start, end };
   };
 
@@ -495,6 +492,9 @@ const ChartSection = () => {
               color: theme.palette.text.secondary,
               formatter: (w) => {
                 const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                if (total >= 1000) {
+                  return (total / 1000).toFixed(2) + " MWh";
+                }
                 return total.toLocaleString() + " kWh";
               },
             },
@@ -506,7 +506,10 @@ const ChartSection = () => {
               color: theme.palette.text.primary,
               offsetY: -10,
               formatter: (val) => {
-                return val.toLocaleString();
+                if (val >= 1000) {
+                  return (val / 1000).toFixed(2) + " MW";
+                }
+                return val.toLocaleString() + " kW";
               },
             },
           },
@@ -543,6 +546,9 @@ const ChartSection = () => {
       y: {
         formatter: (val, { seriesIndex }) => {
           const percentage = ((val / totalEnergy) * 100).toFixed(1);
+          if (val >= 1000) {
+            return `${(val / 1000).toFixed(2)} MWh (${percentage}%)`;
+          }
           return `${val.toLocaleString()} kWh (${percentage}%)`;
         },
       },
