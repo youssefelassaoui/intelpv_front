@@ -111,13 +111,21 @@ const ChartSection = () => {
   const theme = useTheme();
   const t = translations[language];
 
-  const defaultStart = new Date("2025-08-01T00:00:00Z");
-  const defaultEnd = new Date("2025-08-18T23:59:59Z");
+  const getDefaultDateRange = () => {
+    const end = new Date();
+    end.setUTCHours(23, 59, 59, 999);
+    const start = new Date(end);
+    start.setUTCDate(start.getUTCDate() - 30);
+    start.setUTCHours(0, 0, 0, 0);
+    return { start, end };
+  };
 
-  const [barStartDate, setBarStartDate] = useState(defaultStart);
-  const [barEndDate, setBarEndDate] = useState(defaultEnd);
-  const [donutStartDate, setDonutStartDate] = useState(defaultStart);
-  const [donutEndDate, setDonutEndDate] = useState(defaultEnd);
+  const defaultDates = getDefaultDateRange();
+
+  const [barStartDate, setBarStartDate] = useState(defaultDates.start);
+  const [barEndDate, setBarEndDate] = useState(defaultDates.end);
+  const [donutStartDate, setDonutStartDate] = useState(defaultDates.start);
+  const [donutEndDate, setDonutEndDate] = useState(defaultDates.end);
   const [dailyEnergyData, setDailyEnergyData] = useState(null);
   const [donutEnergyData, setDonutEnergyData] = useState(null);
   const [loading, setLoading] = useState(true);

@@ -51,31 +51,42 @@ const PlantMeasures = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [devices, setDevices] = useState([]);
   
-  const [powerStartDate, setPowerStartDate] = useState(new Date("2023-08-25"));
-  const [powerEndDate, setPowerEndDate] = useState(new Date("2023-08-31"));
+  const getDefaultDateRange = () => {
+    const end = new Date();
+    end.setUTCHours(23, 59, 59, 999);
+    const start = new Date(end);
+    start.setUTCDate(start.getUTCDate() - 7);
+    start.setUTCHours(0, 0, 0, 0);
+    return { start, end };
+  };
+
+  const defaultDates = getDefaultDateRange();
+
+  const [powerStartDate, setPowerStartDate] = useState(defaultDates.start);
+  const [powerEndDate, setPowerEndDate] = useState(defaultDates.end);
   const [powerDeviceId, setPowerDeviceId] = useState("");
   const [powerMeasures, setPowerMeasures] = useState([]);
   const [loadingPowerMeasures, setLoadingPowerMeasures] = useState(false);
   const [powerError, setPowerError] = useState(null);
   
-  const [currentStartDate, setCurrentStartDate] = useState(new Date("2023-08-25"));
-  const [currentEndDate, setCurrentEndDate] = useState(new Date("2023-08-31"));
+  const [currentStartDate, setCurrentStartDate] = useState(defaultDates.start);
+  const [currentEndDate, setCurrentEndDate] = useState(defaultDates.end);
   const [currentDeviceId, setCurrentDeviceId] = useState("");
   const [currentFilter, setCurrentFilter] = useState("A");
   const [currentMeasures, setCurrentMeasures] = useState([]);
   const [loadingCurrentMeasures, setLoadingCurrentMeasures] = useState(false);
   const [currentError, setCurrentError] = useState(null);
   
-  const [voltageStartDate, setVoltageStartDate] = useState(new Date("2023-08-25"));
-  const [voltageEndDate, setVoltageEndDate] = useState(new Date("2023-08-31"));
+  const [voltageStartDate, setVoltageStartDate] = useState(defaultDates.start);
+  const [voltageEndDate, setVoltageEndDate] = useState(defaultDates.end);
   const [voltageDeviceId, setVoltageDeviceId] = useState("");
   const [voltageFilter, setVoltageFilter] = useState("A");
   const [voltageMeasures, setVoltageMeasures] = useState([]);
   const [loadingVoltageMeasures, setLoadingVoltageMeasures] = useState(false);
   const [voltageError, setVoltageError] = useState(null);
 
-  const [statusStartDate, setStatusStartDate] = useState(new Date("2023-08-25"));
-  const [statusEndDate, setStatusEndDate] = useState(new Date("2023-08-31"));
+  const [statusStartDate, setStatusStartDate] = useState(defaultDates.start);
+  const [statusEndDate, setStatusEndDate] = useState(defaultDates.end);
   const [statusDeviceId, setStatusDeviceId] = useState("");
   const [statusMeasures, setStatusMeasures] = useState([]);
   const [loadingStatusMeasures, setLoadingStatusMeasures] = useState(false);
@@ -88,7 +99,7 @@ const PlantMeasures = () => {
       id: 1,
       name: "Green & Smart Building Park (Brique Rouge)",
       plantId: 49951765,
-      image: "/gsbp.jpg",
+      image: "/gsbp.png",
       location: "Ben Guerir 43150, MO",
       capacity: "6 kW",
       strings: 3,
@@ -98,7 +109,7 @@ const PlantMeasures = () => {
       id: 2,
       name: "Green Energy Park (Trina)",
       plantId: null,
-      image: "/trina.jpg",
+      image: "/trina.png",
       location: "Route Régionale Kelaa Km 3, R206, Ben Guerir, MO",
       capacity: "22.23 kW",
       strings: 6,

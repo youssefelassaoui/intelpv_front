@@ -18,16 +18,24 @@ import {
 const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [currentMonth, setCurrentMonth] = useState(startDate || new Date());
   const [selectionStart, setSelectionStart] = useState(startDate || new Date());
   const [selectionEnd, setSelectionEnd] = useState(endDate || new Date());
   const [isSelecting, setIsSelecting] = useState(false);
 
+  useEffect(() => {
+    if (startDate && endDate) {
+      setSelectionStart(new Date(startDate));
+      setSelectionEnd(new Date(endDate));
+      setCurrentMonth(new Date(startDate));
+    }
+  }, [startDate?.getTime(), endDate?.getTime()]);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
-    // Remove these lines to maintain the current selection
-    // setSelectionStart(startDate)
-    // setSelectionEnd(endDate)
+    if (startDate) {
+      setCurrentMonth(new Date(startDate));
+    }
   };
 
   const handleClose = () => {
@@ -75,13 +83,25 @@ const CustomDateRangePicker = ({ startDate, endDate, onRangeChange }) => {
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       if (isSelecting) {
-        handleMouseUp();
+        setIsSelecting(false);
+        if (selectionStart && selectionEnd) {
+          const start = new Date(
+            Math.min(selectionStart.getTime(), selectionEnd.getTime())
+          );
+          const end = new Date(
+            Math.max(selectionStart.getTime(), selectionEnd.getTime())
+          );
+          setSelectionStart(start);
+          setSelectionEnd(end);
+          onRangeChange(start, end);
+          handleClose();
+        }
       }
     };
 
     window.addEventListener("mouseup", handleGlobalMouseUp);
     return () => window.removeEventListener("mouseup", handleGlobalMouseUp);
-  }, [isSelecting, handleMouseUp]); // Added handleMouseUp to dependencies
+  }, [isSelecting, selectionStart, selectionEnd, onRangeChange]);
 
   const isInRange = (date) => {
     if (!selectionStart || !selectionEnd) return false;
