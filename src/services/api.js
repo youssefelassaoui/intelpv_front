@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8084/api";
+const API_BASE_URL = process.env.REACT_APP_API_BASE || "http://localhost:8084/api";
 
 export const fetchDailyEnergy = async (plantId, startDate, endDate) => {
   try {
