@@ -5,6 +5,7 @@ export const translations = {
       plantMeasures: "PLANT-MEASURES",
       alarms: "ALARMS",
       weatherStation: "WEATHER STATION",
+      diagnostics: "DIAGNOSTICS",
     },
     signIn: {
       welcome: "Welcome to IntelligentPV",
@@ -100,6 +101,7 @@ export const translations = {
       plantMeasures: "MESURES DE CENTRALE",
       alarms: "ALARMES",
       weatherStation: "STATION MÉTÉOROLOGIQUE",
+      diagnostics: "DIAGNOSTIQUES",
     },
     signIn: {
       welcome: "Bienvenue sur IntelligentPV",

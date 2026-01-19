@@ -3,6 +3,7 @@ import WeatherStation from "./pages/WeatherStation";
 import PlantMeasures from "./pages/PlantMeasure";
 import PlantsList from "./pages/PlantsList";
 import SignInPage from "./pages/SignIn";
+import Diagnostics from "./pages/Diagnostics";
 
 const routes = [
   {
@@ -38,6 +39,12 @@ const routes = [
   {
     path: "/weather-station",
     element: WeatherStation,
+    exact: true,
+    protected: true,
+  },
+  {
+    path: "/diagnostics",
+    element: Diagnostics,
     exact: true,
     protected: true,
   },

@@ -29,6 +29,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
+import BugReportIcon from "@mui/icons-material/BugReport";
 
 const NavItem = styled(Typography)(({ theme, selected }) => ({
   display: "flex",
@@ -127,6 +128,11 @@ export default function ToolbarComponent() {
       path: "/plant-measures",
       label: t.nav.plantMeasures,
       icon: <EqualizerIcon sx={{ fontSize: "1.2rem" }} />,
+    },
+    {
+      path: "/diagnostics",
+      label: t.nav.diagnostics,
+      icon: <BugReportIcon sx={{ fontSize: "1.2rem" }} />,
     },
   ];
 
