@@ -23,16 +23,14 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { translations } from "../translations";
 import ReactApexChart from "react-apexcharts";
 import WarningIcon from "@mui/icons-material/Warning";
-import ErrorIcon from "@mui/icons-material/Error";
-import InfoIcon from "@mui/icons-material/Info";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import { format } from "date-fns";
+import Footer from "../components/GloabalComponents/Footer";
 
 // Styled components
 const AnomalyListContainer = styled(Card)(({ theme }) => ({
-  height: "calc(100vh - 100px)",
+  height: "calc(100vh - 120px)",
   display: "flex",
   flexDirection: "column",
   backgroundColor: theme.palette.background.paper,
@@ -59,7 +57,7 @@ const AnomalyListItem = styled(ListItemButton)(({ theme, selected }) => ({
 }));
 
 const DetailCard = styled(Card)(({ theme }) => ({
-  height: "calc(100vh - 100px)",
+  height: "calc(100vh - 120px)",
   display: "flex",
   flexDirection: "column",
   backgroundColor: theme.palette.background.paper,
@@ -442,29 +440,16 @@ const getStatusColor = (status) => {
   }
 };
 
-const getStatusLabel = (status) => {
+const getStatusLabel = (status, t) => {
   switch (status) {
     case "new":
-      return "New";
+      return t.diagnostics.status.new;
     case "under_treatment":
-      return "Under Treatment";
+      return t.diagnostics.status.underTreatment;
     case "treated":
-      return "Treated";
+      return t.diagnostics.status.treated;
     default:
       return status;
-  }
-};
-
-const getSeverityIcon = (severity) => {
-  switch (severity) {
-    case "high":
-      return <ErrorIcon sx={{ color: "#f44336" }} />;
-    case "medium":
-      return <WarningIcon sx={{ color: "#ff9800" }} />;
-    case "low":
-      return <InfoIcon sx={{ color: "#2196f3" }} />;
-    default:
-      return <InfoIcon />;
   }
 };
 
@@ -479,6 +464,10 @@ const getSeverityColor = (severity) => {
     default:
       return "#757575";
   }
+};
+
+const getSeverityIcon = (severity, theme) => {
+  return <WarningIcon sx={{ color: theme.palette.text.primary }} />;
 };
 
 function Diagnostics() {
@@ -510,75 +499,165 @@ function Diagnostics() {
     }
   }, [filteredAnomalies, selectedAnomaly]);
 
-  // Generate chart data with electrical metrics showing anomaly
+  // Generate SCADA-style PV production chart with realistic bell curve and visible anomalies
   const generateChartData = (anomaly) => {
     if (!anomaly) return { series: [], options: {} };
 
-    // Generate time series data for the last 24 hours
-    const hours = 24;
-    const voltageData = [];
-    const currentData = [];
+    // Generate daytime hours only (6 AM to 6 PM = 12 hours)
+    const startHour = 6;
+    const endHour = 18;
+    const totalHours = endHour - startHour;
     const powerData = [];
+    const normalPowerData = [];
     const categories = [];
-    const anomalyStartIndex = 20; // Anomaly starts at hour 20
+    const anomalyZones = [];
 
-    for (let i = hours - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setHours(date.getHours() - i);
-      categories.push(format(date, "HH:mm"));
+    // Plant capacity for scaling
+    const plantCapacity = anomaly.plantCapacity || 20; // kW
+    const peakPower = plantCapacity * 0.85; // 85% of capacity at peak
 
-      // Normal values
-      const normalVoltage = 380;
-      const normalCurrent = 5.5;
-      const normalPower = normalVoltage * normalCurrent; // ~2090W
+    // Determine anomaly type and time range
+    let anomalyStartHour = 0;
+    let anomalyEndHour = 0;
+    let anomalyType = "";
+    let powerLoss = 0;
+    let anomalyStyle = "drop"; // "drop", "zero", "underperformance"
 
-      // Anomaly values (when anomaly is active)
-      let voltage, current, power;
-      if (i >= anomalyStartIndex) {
-        // Anomaly period - show deviation
-        if (anomaly.classification === "String Mismatch") {
-          voltage = anomaly.voltage || 320;
-          current = normalCurrent * 0.85; // Reduced current
-          power = voltage * current;
-        } else if (anomaly.classification === "Hot Spot") {
-          voltage = normalVoltage * 0.95; // Slight voltage drop
-          current = normalCurrent * 0.9; // Reduced current
-          power = voltage * current;
-        } else {
-          voltage = normalVoltage * (1 - (anomaly.powerReduction || 15) / 100);
-          current = normalCurrent * (1 - (anomaly.powerReduction || 15) / 100);
-          power = voltage * current;
-        }
-        // Add some variation
-        voltage += (Math.random() - 0.5) * 10;
-        current += (Math.random() - 0.5) * 0.3;
-        power = voltage * current;
-      } else {
-        // Normal period
-        voltage = normalVoltage + (Math.random() - 0.5) * 5;
-        current = normalCurrent + (Math.random() - 0.5) * 0.2;
-        power = voltage * current;
+    if (anomaly.classification === "Inverter Fault") {
+      anomalyStartHour = 11; // 11 AM
+      anomalyEndHour = 13; // 1 PM
+      anomalyType = "Inverter Trip";
+      powerLoss = peakPower * 0.6; // 60% drop
+      anomalyStyle = "drop";
+    } else if (anomaly.classification === "String Mismatch") {
+      anomalyStartHour = 10; // 10 AM
+      anomalyEndHour = 14; // 2 PM
+      anomalyType = "Partial Inverter Fault";
+      powerLoss = peakPower * 0.4; // 40% drop
+      anomalyStyle = "drop";
+    } else if (anomaly.classification === "Shading Issue") {
+      anomalyStartHour = 9; // 9 AM
+      anomalyEndHour = 15; // 3 PM
+      anomalyType = "Shading/Soiling";
+      powerLoss = peakPower * 0.25; // 25% reduction
+      anomalyStyle = "underperformance";
+    } else if (anomaly.classification === "Hot Spot") {
+      anomalyStartHour = 12; // 12 PM (noon)
+      anomalyEndHour = 14; // 2 PM
+      anomalyType = "Hot Spot Degradation";
+      powerLoss = peakPower * 0.3; // 30% reduction
+      anomalyStyle = "underperformance";
+    } else if (anomaly.classification === "Cell Degradation") {
+      anomalyStartHour = 8; // 8 AM
+      anomalyEndHour = 16; // 4 PM
+      anomalyType = "Cell Degradation";
+      powerLoss = peakPower * 0.15; // 15% reduction
+      anomalyStyle = "underperformance";
+    } else {
+      // Default: data loss scenario
+      anomalyStartHour = 13; // 1 PM
+      anomalyEndHour = 14; // 2 PM
+      anomalyType = "Data Loss";
+      powerLoss = peakPower;
+      anomalyStyle = "zero";
+    }
+
+    // Generate bell-shaped solar production curve
+    for (let hour = startHour; hour <= endHour; hour++) {
+      const timeLabel = `${hour.toString().padStart(2, "0")}:00`;
+      categories.push(timeLabel);
+
+      // Calculate position in day (0 = sunrise, 1 = sunset)
+      const dayPosition = (hour - startHour) / totalHours;
+
+      // Bell curve: peak at midday (hour 12, position 0.5)
+      const peakPosition = 0.5;
+      const distanceFromPeak = Math.abs(dayPosition - peakPosition);
+      
+      // Bell curve formula: smooth rise and fall
+      let solarFactor = 0;
+      if (dayPosition >= 0 && dayPosition <= 1) {
+        // Gaussian-like curve
+        const sigma = 0.3; // Controls curve width
+        solarFactor = Math.exp(-Math.pow((dayPosition - peakPosition) / sigma, 2) / 2);
       }
 
-      voltageData.push(voltage);
-      currentData.push(current);
-      powerData.push(power / 1000); // Convert to kW
+      // Base power with realistic variation
+      const basePower = peakPower * solarFactor;
+      const variation = (Math.random() - 0.5) * peakPower * 0.05; // 5% variation
+      const normalPower = Math.max(0, basePower + variation);
+
+      // Apply anomaly based on type
+      let actualPower = normalPower;
+      const isInAnomalyZone = hour >= anomalyStartHour && hour < anomalyEndHour;
+
+      if (isInAnomalyZone) {
+        if (anomalyStyle === "zero") {
+          // Flat zero power (data loss or inverter OFF)
+          actualPower = 0;
+        } else if (anomalyStyle === "drop") {
+          // Sudden power drop (partial inverter fault)
+          actualPower = normalPower * 0.4; // 60% drop
+          // Add some noise to make it look realistic
+          actualPower += (Math.random() - 0.5) * peakPower * 0.02;
+        } else if (anomalyStyle === "underperformance") {
+          // Underperformance zone (soiling or shading)
+          const reduction = powerLoss / peakPower;
+          actualPower = normalPower * (1 - reduction);
+          // Maintain curve shape but reduced
+          actualPower += (Math.random() - 0.5) * peakPower * 0.03;
+        }
+      }
+
+      powerData.push(Math.max(0, actualPower));
+      normalPowerData.push(normalPower);
     }
+
+    // Create anomaly zones for annotations
+    const anomalyStartIndex = anomalyStartHour - startHour;
+    const anomalyEndIndex = anomalyEndHour - startHour;
+
+    // Create tooltip formatter with closure access to variables
+    const createTooltipFormatter = () => {
+      return function({ series, seriesIndex, dataPointIndex, w }) {
+        const hour = startHour + dataPointIndex;
+        const isInAnomalyZone = hour >= anomalyStartHour && hour < anomalyEndHour;
+        const powerValue = series[seriesIndex][dataPointIndex];
+        const normalValue = normalPowerData[dataPointIndex];
+        const loss = normalValue - powerValue;
+        
+        let html = `
+          <div style="padding: 10px; font-family: 'Poppins', sans-serif; background: ${theme.palette.mode === 'dark' ? '#1e1e1e' : '#fff'}; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+            <div style="font-weight: 600; margin-bottom: 6px; color: ${theme.palette.text.primary};">
+              ${categories[dataPointIndex]}
+            </div>
+            <div style="color: #129990; font-size: 16px; font-weight: 600; margin-bottom: ${isInAnomalyZone && loss > 0.1 ? '8px' : '0'};">
+              Power: ${powerValue.toFixed(2)} kW
+            </div>
+        `;
+        
+        if (isInAnomalyZone && loss > 0.1) {
+          html += `
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid ${theme.palette.divider};">
+              <div style="color: ${getSeverityColor(anomaly.severity)}; font-weight: 600; font-size: 12px; margin-bottom: 4px;">
+                ⚠️ ${anomalyType}
+              </div>
+              <div style="color: #f44336; font-size: 11px;">
+                Estimated Loss: ${loss.toFixed(2)} kW
+              </div>
+            </div>
+          `;
+        }
+        
+        html += `</div>`;
+        return html;
+      };
+    };
 
     return {
       series: [
         {
-          name: "Voltage",
-          type: "line",
-          data: voltageData,
-        },
-        {
-          name: "Current",
-          type: "line",
-          data: currentData,
-        },
-        {
-          name: "Power",
+          name: "Power Production",
           type: "line",
           data: powerData,
         },
@@ -596,26 +675,53 @@ function Diagnostics() {
         },
         stroke: {
           curve: "smooth",
-          width: 2,
+          width: 3,
+          colors: ["#129990"],
         },
         fill: {
           type: "gradient",
           gradient: {
             shadeIntensity: 1,
-            opacityFrom: 0.7,
-            opacityTo: 0.2,
-            stops: [0, 90, 100],
+            opacityFrom: 0.6,
+            opacityTo: 0.1,
+            stops: [0, 50, 100],
+            colorStops: [
+              {
+                offset: 0,
+                color: "#129990",
+                opacity: 0.6,
+              },
+              {
+                offset: 50,
+                color: "#129990",
+                opacity: 0.3,
+              },
+              {
+                offset: 100,
+                color: "#129990",
+                opacity: 0.1,
+              },
+            ],
           },
         },
         markers: {
           size: 0,
           hover: {
-            size: 4,
+            size: 6,
           },
         },
         xaxis: {
           categories: categories,
           type: "category",
+          title: {
+            text: "Time (Daytime Hours)",
+            style: {
+              color: theme.palette.text.primary,
+              fontSize: "12px",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 600,
+            },
+          },
           labels: {
             style: {
               colors: theme.palette.text.secondary,
@@ -640,97 +746,37 @@ function Diagnostics() {
             offsetY: 0,
           },
         },
-        yaxis: [
-          {
-            title: {
-              text: "Voltage (V)",
-              style: {
-                color: "#2196F3",
-                fontSize: "12px",
-                fontFamily: "Poppins, sans-serif",
-              },
-            },
-            labels: {
-              style: {
-                colors: "#2196F3",
-                fontSize: "11px",
-                fontFamily: "Poppins, sans-serif",
-              },
-              formatter: (val) => val.toFixed(0),
-            },
-            axisBorder: {
-              show: true,
-              color: theme.palette.divider,
-              width: 1,
-            },
-            axisTicks: {
-              show: true,
-              borderType: "solid",
-              color: theme.palette.divider,
-              width: 6,
+        yaxis: {
+          title: {
+            text: "Power (kW)",
+            style: {
+              color: theme.palette.text.primary,
+              fontSize: "12px",
+              fontFamily: "Poppins, sans-serif",
+              fontWeight: 600,
             },
           },
-          {
-            title: {
-              text: "Current (A)",
-              style: {
-                color: "#4CAF50",
-                fontSize: "12px",
-                fontFamily: "Poppins, sans-serif",
-              },
+          labels: {
+            style: {
+              colors: theme.palette.text.secondary,
+              fontSize: "11px",
+              fontFamily: "Poppins, sans-serif",
             },
-            labels: {
-              style: {
-                colors: "#4CAF50",
-                fontSize: "11px",
-                fontFamily: "Poppins, sans-serif",
-              },
-              formatter: (val) => val.toFixed(2),
-            },
-            opposite: true,
-            axisBorder: {
-              show: true,
-              color: theme.palette.divider,
-              width: 1,
-            },
-            axisTicks: {
-              show: true,
-              borderType: "solid",
-              color: theme.palette.divider,
-              width: 6,
-            },
+            formatter: (val) => val.toFixed(1),
           },
-          {
-            title: {
-              text: "Power (kW)",
-              style: {
-                color: "#FF9800",
-                fontSize: "12px",
-                fontFamily: "Poppins, sans-serif",
-              },
-            },
-            labels: {
-              style: {
-                colors: "#FF9800",
-                fontSize: "11px",
-                fontFamily: "Poppins, sans-serif",
-              },
-              formatter: (val) => val.toFixed(2),
-            },
-            opposite: true,
-            axisBorder: {
-              show: true,
-              color: theme.palette.divider,
-              width: 1,
-            },
-            axisTicks: {
-              show: true,
-              borderType: "solid",
-              color: theme.palette.divider,
-              width: 6,
-            },
+          min: 0,
+          axisBorder: {
+            show: true,
+            color: theme.palette.divider,
+            width: 1,
           },
-        ],
+          axisTicks: {
+            show: true,
+            borderType: "solid",
+            color: theme.palette.divider,
+            width: 6,
+          },
+        },
         grid: {
           show: true,
           borderColor: theme.palette.divider,
@@ -754,39 +800,66 @@ function Diagnostics() {
           },
         },
         tooltip: {
-          shared: true,
+          shared: false,
           theme: theme.palette.mode,
           style: {
             fontFamily: "Poppins, sans-serif",
+            fontSize: "12px",
           },
-          y: {
-            formatter: (val, { seriesIndex }) => {
-              if (seriesIndex === 0) return `${val.toFixed(0)} V`;
-              if (seriesIndex === 1) return `${val.toFixed(2)} A`;
-              return `${val.toFixed(2)} kW`;
-            },
-          },
+          custom: createTooltipFormatter(),
         },
-        colors: ["#2196F3", "#4CAF50", "#FF9800"],
+        colors: ["#129990"],
         annotations: {
           xaxis: [
             {
               x: categories[anomalyStartIndex],
+              x2: categories[anomalyEndIndex - 1],
+              fillColor: getSeverityColor(anomaly.severity),
+              opacity: 0.2,
               borderColor: getSeverityColor(anomaly.severity),
+              borderWidth: 2,
+              strokeDashArray: anomalyStyle === "zero" ? 5 : 0,
               label: {
-                text: "Anomaly Detected",
+                text: `⚠️ ${anomalyType}`,
                 style: {
                   color: "#fff",
                   background: getSeverityColor(anomaly.severity),
-                  fontSize: "10px",
+                  fontSize: "11px",
                   fontFamily: "Poppins, sans-serif",
+                  fontWeight: 600,
                   padding: {
-                    left: 5,
-                    right: 5,
-                    top: 2,
-                    bottom: 2,
+                    left: 8,
+                    right: 8,
+                    top: 4,
+                    bottom: 4,
                   },
                 },
+                orientation: "horizontal",
+                offsetY: -10,
+              },
+            },
+          ],
+          points: [
+            {
+              x: categories[anomalyStartIndex],
+              seriesIndex: 0,
+              y: powerData[anomalyStartIndex],
+              marker: {
+                size: 8,
+                fillColor: getSeverityColor(anomaly.severity),
+                strokeColor: "#fff",
+                strokeWidth: 2,
+              },
+            },
+            {
+              x: categories[anomalyEndIndex - 1],
+              seriesIndex: 0,
+              y: powerData[anomalyEndIndex - 1],
+              marker: {
+                size: 8,
+                fillColor: getSeverityColor(anomaly.severity),
+                strokeColor: "#fff",
+                strokeWidth: 2,
               },
             },
           ],
@@ -800,12 +873,11 @@ function Diagnostics() {
   return (
     <Box
       sx={{
-        minHeight: "calc(100vh - 64px)",
         backgroundColor: "background.default",
         p: 2,
       }}
     >
-      <Grid container spacing={2} sx={{ height: "calc(100vh - 100px)" }}>
+      <Grid container spacing={2}>
         {/* Left Side - Anomaly List */}
         <Grid item xs={12} md={4}>
           <AnomalyListContainer>
@@ -825,7 +897,7 @@ function Diagnostics() {
                   fontSize: "0.95rem",
                 }}
               >
-                Anomalies & Faults
+                {t.diagnostics.title}
               </Typography>
               <TextField
                 select
@@ -843,7 +915,7 @@ function Diagnostics() {
               >
                 {plantNames.map((plant) => (
                   <MenuItem key={plant} value={plant}>
-                    {plant === "all" ? "All Plants" : plant}
+                    {plant === "all" ? t.diagnostics.allPlants : plant}
                   </MenuItem>
                 ))}
               </TextField>
@@ -854,7 +926,7 @@ function Diagnostics() {
                   color: "text.secondary",
                 }}
               >
-                {filteredAnomalies.length} anomaly{filteredAnomalies.length !== 1 ? "ies" : ""}
+                {filteredAnomalies.length} {filteredAnomalies.length !== 1 ? t.diagnostics.anomalies : t.diagnostics.anomaly}
               </Typography>
             </Box>
 
@@ -895,7 +967,7 @@ function Diagnostics() {
                         mr: 1.5,
                       }}
                     >
-                      {getSeverityIcon(anomaly.severity)}
+                      {getSeverityIcon(anomaly.severity, theme)}
                     </Avatar>
                     <ListItemText
                       primary={
@@ -918,7 +990,7 @@ function Diagnostics() {
                             {anomaly.classification}
                           </Typography>
                           <Chip
-                            label={getStatusLabel(anomaly.status)}
+                            label={getStatusLabel(anomaly.status, t)}
                             size="small"
                             sx={{
                               height: "20px",
@@ -1001,7 +1073,7 @@ function Diagnostics() {
                         height: 40,
                       }}
                     >
-                      {getSeverityIcon(selectedAnomaly.severity)}
+                      {getSeverityIcon(selectedAnomaly.severity, theme)}
                     </Avatar>
                     <Box sx={{ flex: 1 }}>
                       <Typography
@@ -1025,7 +1097,7 @@ function Diagnostics() {
                         }}
                       >
                         <Chip
-                          label={getStatusLabel(selectedAnomaly.status)}
+                          label={getStatusLabel(selectedAnomaly.status, t)}
                           size="small"
                           sx={{
                             backgroundColor: getStatusColor(
@@ -1080,7 +1152,7 @@ function Diagnostics() {
                         fontSize: "0.7rem",
                       }}
                     >
-                      Plant
+                      {t.diagnostics.plant}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -1105,7 +1177,7 @@ function Diagnostics() {
                         fontSize: "0.7rem",
                       }}
                     >
-                      String ID
+                      {t.diagnostics.stringId}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -1130,7 +1202,7 @@ function Diagnostics() {
                         fontSize: "0.7rem",
                       }}
                     >
-                      Panel ID
+                      {t.diagnostics.panelId}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -1155,7 +1227,7 @@ function Diagnostics() {
                         fontSize: "0.7rem",
                       }}
                     >
-                      Detected At
+                      {t.diagnostics.detectedAt}
                     </Typography>
                     <Typography
                       variant="body2"
@@ -1207,20 +1279,22 @@ function Diagnostics() {
                         fontSize: "0.95rem",
                       }}
                     >
-                      Power Loss Impact
+                      {t.diagnostics.powerLossImpact}
                     </Typography>
-                    <Grid container spacing={1.5}>
-                      <Grid item xs={6} sm={3}>
-                        <Paper sx={{ p: 1, textAlign: "center" }}>
+                    <Grid container spacing={1.5} justifyContent="center">
+                      <Grid item xs={12} sm={4}>
+                        <Paper sx={{ p: 1.5, textAlign: "center" }}>
                           <Typography
                             variant="caption"
                             sx={{
                               fontFamily: "'Poppins', sans-serif",
                               color: "text.secondary",
                               fontSize: "0.7rem",
+                              display: "block",
+                              mb: 0.5,
                             }}
                           >
-                            Current Loss
+                            {t.diagnostics.currentLoss}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -1229,23 +1303,26 @@ function Diagnostics() {
                               fontWeight: 600,
                               color: "#f44336",
                               fontSize: "0.9rem",
+                              display: "block",
                             }}
                           >
                             {selectedAnomaly.powerLoss.current} kW
                           </Typography>
                         </Paper>
                       </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Paper sx={{ p: 1, textAlign: "center" }}>
+                      <Grid item xs={12} sm={4}>
+                        <Paper sx={{ p: 1.5, textAlign: "center" }}>
                           <Typography
                             variant="caption"
                             sx={{
                               fontFamily: "'Poppins', sans-serif",
                               color: "text.secondary",
                               fontSize: "0.7rem",
+                              display: "block",
+                              mb: 0.5,
                             }}
                           >
-                            Daily Loss
+                            {t.diagnostics.dailyLoss}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -1254,23 +1331,26 @@ function Diagnostics() {
                               fontWeight: 600,
                               color: "#ff9800",
                               fontSize: "0.9rem",
+                              display: "block",
                             }}
                           >
                             {selectedAnomaly.powerLoss.dailyEnergyLoss} kWh
                           </Typography>
                         </Paper>
                       </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Paper sx={{ p: 1, textAlign: "center" }}>
+                      <Grid item xs={12} sm={4}>
+                        <Paper sx={{ p: 1.5, textAlign: "center" }}>
                           <Typography
                             variant="caption"
                             sx={{
                               fontFamily: "'Poppins', sans-serif",
                               color: "text.secondary",
                               fontSize: "0.7rem",
+                              display: "block",
+                              mb: 0.5,
                             }}
                           >
-                            Monthly Loss
+                            {t.diagnostics.monthlyLoss}
                           </Typography>
                           <Typography
                             variant="body2"
@@ -1279,40 +1359,133 @@ function Diagnostics() {
                               fontWeight: 600,
                               color: "#ff9800",
                               fontSize: "0.9rem",
+                              display: "block",
                             }}
                           >
                             {selectedAnomaly.powerLoss.estimatedMonthlyLoss} kWh
                           </Typography>
                         </Paper>
                       </Grid>
-                      <Grid item xs={6} sm={3}>
-                        <Paper sx={{ p: 1, textAlign: "center" }}>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              fontFamily: "'Poppins', sans-serif",
-                              color: "text.secondary",
-                              fontSize: "0.7rem",
-                            }}
-                          >
-                            Cost Impact
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              fontFamily: "'Poppins', sans-serif",
-                              fontWeight: 600,
-                              color: "#4caf50",
-                              fontSize: "0.9rem",
-                            }}
-                          >
-                            €{selectedAnomaly.powerLoss.estimatedCostLoss}/mo
-                          </Typography>
-                        </Paper>
-                      </Grid>
                     </Grid>
                   </Card>
                 )}
+
+                {/* Chart */}
+                <Card sx={{ mb: 2, p: 1.5 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontFamily: "'Poppins', sans-serif",
+                      fontWeight: 600,
+                      color: "text.primary",
+                      mb: 1.5,
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    {t.diagnostics.powerProduction}
+                  </Typography>
+                  {chartData.series.length > 0 && (
+                    <ReactApexChart
+                      options={chartData.options}
+                      series={chartData.series}
+                      type="line"
+                      height={280}
+                    />
+                  )}
+                </Card>
+
+
+                {/* Thermal Image */}
+                <Card sx={{ p: 1.5 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 1.5,
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        fontFamily: "'Poppins', sans-serif",
+                        fontWeight: 600,
+                        color: "text.primary",
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                      {t.diagnostics.thermalImage}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        fontFamily: "'Poppins', sans-serif",
+                        color: "text.secondary",
+                        fontSize: "0.75rem",
+                        textAlign: "right",
+                      }}
+                    >
+                      {t.diagnostics.capturedBy} {selectedAnomaly.droneId || "N/A"} {t.diagnostics.at}{" "}
+                      {selectedAnomaly.thermalImageCapturedAt
+                        ? format(
+                            selectedAnomaly.thermalImageCapturedAt,
+                            "MMM dd, yyyy HH:mm"
+                          )
+                        : "N/A"}
+                    </Typography>
+                  </Box>
+                  <ThermalImageContainer>
+                    <img
+                      src="/thermal-pv.png"
+                      alt="Thermal Image"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        const fallback = document.createElement("div");
+                        fallback.style.cssText = `
+                          text-align: center;
+                          color: ${theme.palette.text.secondary};
+                          padding: 20px;
+                        `;
+                        fallback.innerHTML = `
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="opacity: 0.5; margin-bottom: 8px;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                          </svg>
+                          <p style="font-family: 'Poppins', sans-serif; margin: 0;">Thermal Image</p>
+                          <p style="font-family: 'Poppins', sans-serif; font-size: 0.75rem; margin-top: 4px;">Location: Row ${selectedAnomaly.location.row}, Column ${selectedAnomaly.location.column}</p>
+                        `;
+                        e.target.parentElement.appendChild(fallback);
+                      }}
+                    />
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: 8,
+                        right: 8,
+                        backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.7)",
+                        color: theme.palette.mode === "dark" ? theme.palette.text.primary : "white",
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: 1,
+                      }}
+                    >
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontFamily: "'Poppins', sans-serif",
+                          fontSize: "0.7rem",
+                        }}
+                      >
+                        Row {selectedAnomaly.location.row}, Column{" "}
+                        {selectedAnomaly.location.column}
+                      </Typography>
+                    </Box>
+                  </ThermalImageContainer>
+                </Card>
 
                 {/* Solution Recommendations */}
                 <Card sx={{ p: 1.5, mb: 2 }}>
@@ -1326,7 +1499,7 @@ function Diagnostics() {
                       fontSize: "0.95rem",
                     }}
                   >
-                    Solution Recommendations
+                    {t.diagnostics.solutionRecommendations}
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                     {selectedAnomaly.solutionRecommendations?.map(
@@ -1381,124 +1554,6 @@ function Diagnostics() {
                     )}
                   </Box>
                 </Card>
-
-                {/* Chart */}
-                <Card sx={{ mb: 2, p: 1.5 }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      fontFamily: "'Poppins', sans-serif",
-                      fontWeight: 600,
-                      color: "text.primary",
-                      mb: 1.5,
-                      fontSize: "0.95rem",
-                    }}
-                  >
-                    Electrical Metrics (Last 24 Hours)
-                  </Typography>
-                  {chartData.series.length > 0 && (
-                    <ReactApexChart
-                      options={chartData.options}
-                      series={chartData.series}
-                      type="line"
-                      height={280}
-                    />
-                  )}
-                </Card>
-
-
-                {/* Thermal Image */}
-                <Card sx={{ p: 1.5 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      mb: 1.5,
-                    }}
-                  >
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        fontFamily: "'Poppins', sans-serif",
-                        fontWeight: 600,
-                        color: "text.primary",
-                        fontSize: "0.95rem",
-                      }}
-                    >
-                      Thermal Image
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        fontFamily: "'Poppins', sans-serif",
-                        color: "text.secondary",
-                        fontSize: "0.75rem",
-                        textAlign: "right",
-                      }}
-                    >
-                      Captured by drone {selectedAnomaly.droneId || "N/A"} at{" "}
-                      {selectedAnomaly.thermalImageCapturedAt
-                        ? format(
-                            selectedAnomaly.thermalImageCapturedAt,
-                            "MMM dd, yyyy HH:mm"
-                          )
-                        : "N/A"}
-                    </Typography>
-                  </Box>
-                  <ThermalImageContainer>
-                    <img
-                      src="https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=800&h=600&fit=crop&q=80"
-                      alt="Thermal Image"
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        filter: "sepia(100%) saturate(300%) hue-rotate(-10deg) brightness(1.2) contrast(1.1)",
-                      }}
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        const fallback = document.createElement("div");
-                        fallback.style.cssText = `
-                          text-align: center;
-                          color: ${theme.palette.text.secondary};
-                          padding: 20px;
-                        `;
-                        fallback.innerHTML = `
-                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="opacity: 0.5; margin-bottom: 8px;">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
-                          </svg>
-                          <p style="font-family: 'Poppins', sans-serif; margin: 0;">Thermal Image</p>
-                          <p style="font-family: 'Poppins', sans-serif; font-size: 0.75rem; margin-top: 4px;">Location: Row ${selectedAnomaly.location.row}, Column ${selectedAnomaly.location.column}</p>
-                        `;
-                        e.target.parentElement.appendChild(fallback);
-                      }}
-                    />
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: 8,
-                        right: 8,
-                        backgroundColor: "rgba(0, 0, 0, 0.7)",
-                        color: "white",
-                        px: 1.5,
-                        py: 0.5,
-                        borderRadius: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          fontFamily: "'Poppins', sans-serif",
-                          fontSize: "0.7rem",
-                        }}
-                      >
-                        Row {selectedAnomaly.location.row}, Column{" "}
-                        {selectedAnomaly.location.column}
-                      </Typography>
-                    </Box>
-                  </ThermalImageContainer>
-                </Card>
               </CardContent>
             ) : (
               <CardContent
@@ -1516,13 +1571,16 @@ function Diagnostics() {
                     color: "text.secondary",
                   }}
                 >
-                  Select an anomaly to view details
+                  {t.diagnostics.selectAnomaly}
                 </Typography>
               </CardContent>
             )}
           </DetailCard>
         </Grid>
       </Grid>
+      <Box sx={{ mt: 4 }}>
+        <Footer />
+      </Box>
     </Box>
   );
 }
