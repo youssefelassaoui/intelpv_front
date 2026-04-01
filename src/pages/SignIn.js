@@ -5,6 +5,24 @@ import { translations } from "../translations";
 function SignInPage() {
   const { language } = useLanguage();
   const t = translations[language];
+
+  const partnerLogoSlotStyle = {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    height: "100px",
+    flexShrink: 0,
+  };
+
+  const partnerLogoImgStyle = {
+    maxHeight: "100px",
+    width: "auto",
+    filter: "brightness(0) invert(1)",
+    objectFit: "contain",
+    display: "block",
+  };
+
   return (
     <>
       <style>
@@ -447,41 +465,32 @@ function SignInPage() {
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "flex-end",
                   justifyContent: "center",
                   gap: "2rem",
                 }}
               >
-                <img
-                  src="/gep.png"
-                  alt="Green Energy Park"
-                  style={{
-                    height: "60px",
-                    width: "auto",
-                    filter: "brightness(0) invert(1)",
-                    objectFit: "contain",
-                  }}
-                />
-                <img
-                  src="/iresen.png"
-                  alt="IRESEN"
-                  style={{
-                    height: "60px",
-                    width: "auto",
-                    filter: "brightness(0) invert(1)",
-                    objectFit: "contain",
-                  }}
-                />
-                <img
-                  src="/veolia.png"
-                  alt="Veolia"
-                  style={{
-                    height: "96px",
-                    width: "auto",
-                    filter: "brightness(0) invert(1)",
-                    objectFit: "contain",
-                  }}
-                />
+                <div style={partnerLogoSlotStyle}>
+                  <img
+                    src="/gep.png"
+                    alt="Green Energy Park"
+                    style={partnerLogoImgStyle}
+                  />
+                </div>
+                <div style={partnerLogoSlotStyle}>
+                  <img
+                    src="/iresen.png"
+                    alt="IRESEN"
+                    style={partnerLogoImgStyle}
+                  />
+                </div>
+                <div style={partnerLogoSlotStyle}>
+                  <img
+                    src="/veolia.png"
+                    alt="Veolia"
+                    style={partnerLogoImgStyle}
+                  />
+                </div>
               </div>
             </div>
           </div>
