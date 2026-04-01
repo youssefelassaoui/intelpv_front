@@ -476,7 +476,7 @@ function SignInPage() {
                   src="/veolia.png"
                   alt="Veolia"
                   style={{
-                    height: "60px",
+                    height: "96px",
                     width: "auto",
                     filter: "brightness(0) invert(1)",
                     objectFit: "contain",
