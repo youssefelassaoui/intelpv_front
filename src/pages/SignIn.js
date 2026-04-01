@@ -472,6 +472,16 @@ function SignInPage() {
                     objectFit: "contain",
                   }}
                 />
+                <img
+                  src="/veolia.png"
+                  alt="Veolia"
+                  style={{
+                    height: "60px",
+                    width: "auto",
+                    filter: "brightness(0) invert(1)",
+                    objectFit: "contain",
+                  }}
+                />
               </div>
             </div>
           </div>
